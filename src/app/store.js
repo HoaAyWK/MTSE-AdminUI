@@ -9,6 +9,7 @@ import paymentReducer from '../features/payments/paymentSlice';
 import statisticReducer from '../features/statistic/statisticSlice';
 import feedbackReducer from '../features/feedbacks/feedbackSlice';
 import commentReducer from '../features/comments/commentSlice';
+import offerReducer from '../features/offers/offerSlice'
 
 export const store = configureStore({
     reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
       payments: paymentReducer,
       statistic: statisticReducer,
       feedbacks: feedbackReducer,
-      comments: commentReducer
+      comments: commentReducer,
+      offers: offerReducer
     },
 });

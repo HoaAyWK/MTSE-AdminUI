@@ -29,6 +29,8 @@ import Label from '../components/Label';
 import { fDate, fDateTime } from '../utils/formatTime';
 import Iconify from '../components/Iconify';
 import JobInfoLine from '../features/jobs/JobInfoLine';
+import { getOffersByJob } from '../features/offers/offerSlice';
+import Offer from '../features/offers/Offer';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
     color: theme.palette.main,
@@ -49,15 +51,21 @@ const CardStyle = styled(Card)(({ theme }) => ({
 
 const JobDetails = () => {
     const { jobId } = useParams();
+    console.log(jobId);
     const job = useSelector((state) => selectJobById(state, jobId));
     const { status } = useSelector((state) => state.jobs);
+    const { offers } = useSelector((state) => state.offers);
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (status === action_status.IDLE) {
             dispatch(getJobs());
         }
-    }, [status, dispatch])
+    }, [status, dispatch]);
+
+    useEffect(() => {
+        dispatch(getOffersByJob(jobId))
+    }, [jobId, dispatch]);
 
     return (
         <Page title={`Job ${job?.name}`}>
@@ -193,6 +201,26 @@ const JobDetails = () => {
                                 </Stack>
                             </PaperStyle>
                         </Grid>
+                        {offers?.length > 0 && (
+                            <Grid item xs={12} md={8}>
+                                <Box
+                                    sx={{
+                                        marginBlockStart: 2,
+                                        marginBlockEnd: 1
+                                    }}
+                                >                              
+                                    <Typography variant='body1' color='text.secondary' sx={{ fontWeight: 600, fontSize: '1.2rem', marginBlockStart: 2 }} >
+                                        {offers?.length} {offers?.length > 1 ? 'Offers' : 'Offer' }
+                                    </Typography>
+                                    <Divider />
+                                </Box>
+                                <Stack spacing={2} sx={{ marginBlockStart: 2 }}>
+                                    {offers?.map((offer) => (
+                                        <Offer offer={offer} key={offer?.id} />
+                                    ))}
+                                </Stack>
+                            </Grid>
+                        )}
                     </Grid>
                 )}
             </Container>

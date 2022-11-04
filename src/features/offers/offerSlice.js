@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { action_status, BASE_API_URL } from '../../app/constants';
+import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../../app/constants';
 import { setMessage } from '../message/messageSlice';
 
 const initialState = {
     offers: [],
     status: action_status.IDLE,
-    error
+    error: null
 };
 
 export const getOffersByJob = createAsyncThunk(
@@ -34,6 +34,20 @@ const offerSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .
+            .addCase(getOffersByJob.pending, (state, action) => {
+                state.status = action_status.LOADING;
+            })
+            .addCase(getOffersByJob.fulfilled, (state, action) => {
+                state.status = action_status.SUCCEEDED;
+                state.offers = action.payload.offers;
+            })
+            .addCase(getOffersByJob.rejected, (state, action) => {
+                state.status = action_status.FAILED;
+                state.error = action.error;  
+            })
     }
-})
+});
+
+const { reducer } = offerSlice;
+
+export default reducer;

@@ -12,6 +12,7 @@ import { RHFTextField, FormProvider } from '../../components/hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { changePassword, refresh } from '../auth/authSlice';
 import { clearMessage } from '../message/messageSlice';
+import { action_status } from '../../app/constants';
 
 const PaperStyle = styled(Paper)(({theme}) => ({
     backgroundColor: '#fff',
@@ -27,7 +28,7 @@ const PaperStyle = styled(Paper)(({theme}) => ({
 const ChangePasswordFrom = (props) => {
     const { user } = props;
     const dispatch = useDispatch();
-    const { changedPassword } = useSelector((state) => state.auth);
+    const { changedPassword, changedPasswordStatus } = useSelector((state) => state.auth);
     const { enqueueSnackbar } = useSnackbar();
     const { message } = useSelector((state) => state.message);
     const navigate = useNavigate();
@@ -71,8 +72,7 @@ const ChangePasswordFrom = (props) => {
     });
 
     const {
-        handleSubmit,
-        formState: { isSubmitting }
+        handleSubmit
     } = methods;
 
     const onSubmit = async (data) => {
@@ -89,7 +89,12 @@ const ChangePasswordFrom = (props) => {
                     <Box
                         sx={{ display: 'flex', justifyContent: 'flex-end' }}
                     >
-                        <LoadingButton size="large" type="submit" variant="contained" loading={isSubmitting}>
+                        <LoadingButton
+                            size="large"
+                            type="submit"
+                            variant="contained"
+                            loading={changedPasswordStatus === action_status.LOADING ? true : false}
+                        >
                             Save Changes
                         </LoadingButton>
                     </Box>

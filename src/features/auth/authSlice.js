@@ -7,11 +7,13 @@ import { ROLES } from '../../app/constants';
 
 const initialState = {
     user: null,
-    status: 'idle',
+    status: action_status.IDLE,
     error: null,
     isAuthenticated: false,
     updated: false,
-    changedPassword: false
+    updateStatus: action_status.IDLE,
+    changedPassword: false,
+    changedPasswordStatus: action_status.IDLE
 };
 
 export const login = createAsyncThunk(
@@ -98,6 +100,8 @@ const authSlice = createSlice({
         refresh: (state, action) => {
             state.updated = false;
             state.changedPassword = false;
+            state.updateStatus = action_status.IDLE;
+            state.changedPasswordStatus = action_status.IDLE;
         },
         logout: (state, action) => {
             state.user = null;
@@ -127,21 +131,31 @@ const authSlice = createSlice({
             })
             .addCase(updateAccount.pending, (state, action) => {
                 state.updated = false;  
+                state.updateStatus = action_status.LOADING;
             })
             .addCase(updateAccount.fulfilled, (state, action) => {
                 state.user = action.payload.user;
                 state.updated = true;  
+                state.updateStatus = action_status.SUCCEEDED;
                 localStorage.setItem('user', JSON.stringify(action.payload.user));
+            })
+            .addCase(updateAccount.rejected, (state, action) => {
+                state.updateStatus = action_status.FAILED;
             })
             .addCase(changePassword.pending, (state, action) => {
                 state.changedPassword = false;
+                state.changedPasswordStatus = action_status.LOADING;
             })
             .addCase(changePassword.fulfilled, (state, action) => {
                 state.changedPassword = true;
                 state.user = null;
                 state.isAuthenticated = false;
                 state.status = action_status.IDLE;
+                state.changedPasswordStatus = action_status.SUCCEEDED;
                 localStorage.setItem('user', null);
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.changedPasswordStatus = action_status.FAILED;
             })
     }
 });

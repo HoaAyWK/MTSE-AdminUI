@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
@@ -37,6 +37,7 @@ const MainStyle = styled('div')(({ theme }) => ({
 export default function DashboardLayout() {
     const [open, setOpen] = useState(false);
     const [user, setUser] = useLocalStorage('user', null);
+    const { user: currentUser } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -47,8 +48,8 @@ export default function DashboardLayout() {
 
     return (
         <RootStyle>
-            <DashboardNavbar user={user} onOpenSidebar={() => setOpen(true)} />
-            <DashboardSidebar user={user} isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+            <DashboardNavbar user={currentUser} onOpenSidebar={() => setOpen(true)} />
+            <DashboardSidebar user={currentUser} isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
             <MainStyle>
                 <Outlet />
             </MainStyle>

@@ -12,6 +12,7 @@ import AvatarUploader from './AvatarUploader';
 import { useDispatch, useSelector } from 'react-redux';
 import { refresh, updateAccount } from '../auth/authSlice';
 import { clearMessage } from '../message/messageSlice';
+import { action_status } from '../../app/constants';
 
 
 const genders = ['Male', 'Female'];
@@ -41,7 +42,7 @@ const BoxFieldStyle = styled('div')(({theme}) => ({
 const AccountForm = (props) => {
     const { user } = props;
     const dispatch = useDispatch();
-    const { updated } = useSelector((state) => state.auth);
+    const { updated, updateStatus } = useSelector((state) => state.auth);
     const { message } = useSelector((state) => state.message);
     const { enqueueSnackbar } = useSnackbar();
 
@@ -61,7 +62,7 @@ const AccountForm = (props) => {
             enqueueSnackbar('Updated Profile', { variant: 'success' });
             dispatch(refresh());
         }
-    }, [updated, dispatch, enqueueSnackbar])
+    }, [updated, dispatch, enqueueSnackbar]);
 
     const UserSchema = Yup.object().shape({
         id: Yup.string(),
@@ -94,9 +95,9 @@ const AccountForm = (props) => {
 
     const {
         handleSubmit,
-        formState: { isSubmitting },
         setFocus
     } = methods;
+
 
     const onSubmit = async (data) => {
         dispatch(updateAccount(data));
@@ -124,7 +125,7 @@ const AccountForm = (props) => {
                         <Box
                             sx={{ display: 'flex', justifyContent: 'flex-end' }}
                         >
-                            <LoadingButton size="large" type="submit" variant="contained" loading={isSubmitting}>
+                            <LoadingButton size="large" type="submit" variant="contained" loading={updateStatus === action_status.LOADING ? true : false}>
                                 Save Changes
                             </LoadingButton>
                         </Box>
