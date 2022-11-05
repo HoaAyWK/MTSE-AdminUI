@@ -46,6 +46,12 @@ export default function DashboardLayout() {
         }
     }, [user])
 
+    useEffect(() => {
+        if (!currentUser) {
+            dispatch(getCurrentUser());
+        }
+    }, [currentUser])
+
     return (
         <RootStyle>
             <DashboardNavbar user={currentUser} onOpenSidebar={() => setOpen(true)} />

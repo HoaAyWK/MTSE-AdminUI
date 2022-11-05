@@ -106,7 +106,12 @@ const authSlice = createSlice({
         logout: (state, action) => {
             state.user = null;
             state.isAuthenticated = false;
-            localStorage.setItem('user', JSON.stringify(null));
+            state.status = action_status.IDLE;
+            state.updated = false;
+            state.changedPassword = false;
+            state.updateStatus = action_status.IDLE;
+            state.changedPasswordStatus = action_status.IDLE;
+            localStorage.setItem('user', null);
         }
     },
     extraReducers: (builder) => {

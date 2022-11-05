@@ -49,7 +49,7 @@ const DashboardSidebar = ({ isOpenSidebar, onCloseSidebar, user }) => {
             </Box>
         
             <Box sx={{ mb: 5, mx: 2.5 }}>
-                <Link underline="none" component={RouterLink} to="#">
+                <Link underline="none" component={RouterLink} to="/dashboard/users/profile">
                     <AccountStyle>
                         { user?.avatar.url ? (
                                 <Avatar src={`${user?.avatar.url}`} alt={`${user.name}`} />

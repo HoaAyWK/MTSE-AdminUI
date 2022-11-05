@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Card, Link, Container, Typography, Alert  } from '@mui/material';
+import { Card, Link, Container, Typography  } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,65 +56,18 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 const Login = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [hiddenAlert, setHiddenAlert] = useState(0);
+    
     const { status } = useSelector((state) => state.auth);
-    const { message } = useSelector((state) => state.message);
+    
     const smUp = useResponsive('up', 'sm');
 
     const mdUp = useResponsive('up', 'md');
 
     useEffect(() => {
-        dispatch(clearMessage());
-    }, [dispatch])
-
-    useEffect(() => {
         if (status === action_status.SUCCEEDED) {
             navigate('/dashboard/app', { replace: true });
         }
-
-        if (status === action_status.FAILED) {
-            setHiddenAlert(1);
-        }
     }, [status, navigate])
-
-    // if (status === action_status.SUCCEEDED) {
-    //     navigate('/dashboard/app', { replace: true });
-    // }
-    
-    // if (status === action_status.LOADING) {
-    //     return (
-    //         <Page title='Login'>
-    //             <RootStyle>
-    //                 <Box 
-    //                     sx={{
-    //                         width: '100%',
-    //                         height: '100vh',
-    //                         display: 'flex',
-    //                         justifyContent: 'center',
-    //                         alignItems: 'center'
-    //                     }}
-    //                 >
-    //                     <Box 
-    //                         sx={{
-    //                             width: '100%',
-    //                             height: '100%',
-    //                             display: 'flex',
-    //                             flexDirection: 'column',
-    //                             justifyContent: 'center',
-    //                             alignItems: 'center'
-    //                         }}
-    //                     >
-    //                         <Logo />
-    //                         <Box sx={{ width: '15%' }}>
-    //                             <LinearProgress />
-    //                         </Box>
-    //                     </Box>                    
-    //                 </Box>
-    //             </RootStyle>
-    //         </Page>
-    //     )
-    // }
 
     return (
         <Page title="Login">
@@ -144,12 +97,10 @@ const Login = () => {
                 <Container maxWidth="sm">
                     <ContentStyle>
                         <Typography variant="h4" gutterBottom>
-                            Sign in to Minimal
+                            Sign in to HTX Freelancer
                         </Typography>
 
                         <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your details below.</Typography>
-                        
-                        <Alert variant='filled' severity='error' sx={{ marginBlockEnd: 2, opacity: `${hiddenAlert}` }} >{message}</Alert>
 
                         <LoginForm />
 

@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
+import { useDispatch } from 'react-redux';
 
 import MenuPopover from '../../components/MenuPopover';
+import { logout } from '../../features/auth/authSlice';
 
 const MENU_OPTIONS = [
     {
@@ -19,9 +21,10 @@ const MENU_OPTIONS = [
 ];
 
 const AccountPopover = ({ user }) => {
-    // const { user } = useSelector((state) => state.auth);
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(null);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleOpen = (event) => {
         setOpen(event.currentTarget);
@@ -29,6 +32,12 @@ const AccountPopover = ({ user }) => {
 
     const handleClose = () => {
         setOpen(null);
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+        setOpen(null);
+        navigate('/login');
     };
 
     return (
@@ -93,7 +102,7 @@ const AccountPopover = ({ user }) => {
 
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+                <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
                     Logout
                 </MenuItem>
             </MenuPopover>
