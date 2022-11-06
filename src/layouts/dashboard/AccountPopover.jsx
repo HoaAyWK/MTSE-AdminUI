@@ -60,8 +60,8 @@ const AccountPopover = ({ user }) => {
                 }),
                 }}
             >
-                {user?.avatar.url ? 
-                    (<Avatar src={user?.avatar.url} alt="photoURL" />)
+                {user?.avatar?.url ? 
+                    (<Avatar src={user?.avatar?.url} alt="photoURL" />)
                     :
                     (<Avatar />)}
                 
