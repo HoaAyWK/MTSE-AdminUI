@@ -67,7 +67,7 @@ const AccountForm = (props) => {
     const UserSchema = Yup.object().shape({
         id: Yup.string(),
         name: Yup.string().required('Name is required'),
-        email: Yup.string().required('Email is reuquired'),
+        email: Yup.string(),
         phone: Yup.string().required('Phone is required'),
         gender: Yup.mixed().oneOf(['Male', 'Female']),
         address: Yup.string().required('Address is required'),
@@ -115,7 +115,7 @@ const AccountForm = (props) => {
                     <PaperStyle>
                         <BoxFieldStyle>
                             <RHFTextField name='name' label='Name *' />
-                            <RHFTextField name='email' label='Email *' />
+                            <RHFTextField name='email' label='Email *' disabled={true} />
                             <RHFTextField name='phone' label='Phone *' />
                             <RHFTextField name='address' label='Address *' />
                             <RHFTextField name='city' label='City *' />

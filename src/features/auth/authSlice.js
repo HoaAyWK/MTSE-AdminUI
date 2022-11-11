@@ -24,7 +24,7 @@ export const login = createAsyncThunk(
             const { user } = response.data;
 
             if (!user.roles.includes(ROLES.ADMIN)) {
-                throw new Error('You do not have perrsion to access this page');
+                throw new Error('You do not have permission to access this page');
             }
 
             return response.data.user;
@@ -51,7 +51,8 @@ export const updateAccount = createAsyncThunk(
     'auth/updateAccount',
     async (updateBody, thunkApi) => {
         try {
-            const { data } = await axios.put(`${BASE_API_URL}/profile`, updateBody, { withCredentials: true});
+            const { email, ...dataToUpdate }  = updateBody;
+            const { data } = await axios.put(`${BASE_API_URL}/profile`, dataToUpdate, { withCredentials: true});
 
             return data;
         } catch (error) {
@@ -104,13 +105,7 @@ const authSlice = createSlice({
             state.changedPasswordStatus = action_status.IDLE;
         },
         logout: (state, action) => {
-            state.user = null;
-            state.isAuthenticated = false;
-            state.status = action_status.IDLE;
-            state.updated = false;
-            state.changedPassword = false;
-            state.updateStatus = action_status.IDLE;
-            state.changedPasswordStatus = action_status.IDLE;
+            state = initialState;
             localStorage.setItem('user', null);
         }
     },
