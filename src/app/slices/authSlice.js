@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { BASE_API_URL, action_status, MESSAGE_VARIANT } from '../../app/constants';
-import { setMessage } from '../message/messageSlice';
-import { ROLES } from '../../app/constants';
+import { BASE_API_URL, action_status, ROLES, MESSAGE_VARIANT } from '../constants';
+import { setMessage } from './messageSlice';
 
 const initialState = {
     user: null,
@@ -27,6 +26,7 @@ export const login = createAsyncThunk(
                 throw new Error('You do not have permission to access this page');
             }
 
+            console.log(response.data);
             return response.data.user;
         } catch (error) {
             const message = (error.response && error.response.data && error.response.data.message) 
@@ -105,7 +105,14 @@ const authSlice = createSlice({
             state.changedPasswordStatus = action_status.IDLE;
         },
         logout: (state, action) => {
-            state = initialState;
+            state.user = null;
+            state.isAuthenticated = false;
+            state.changedPasswordStatus = action_status.IDLE;
+            state.updateStatus = action_status.IDLE;
+            state.error = null;
+            state.status = action_status.IDLE;
+            state.changedPassword = false;
+            state.updated = false;
             localStorage.setItem('user', null);
         }
     },

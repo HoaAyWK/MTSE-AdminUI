@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-import { getCurrentUser } from '../../features/auth/authSlice';
+import { getCurrentUser } from '../../app/slices/authSlice';
 import useLocalStorage from '../../hooks/useLocalStorage.js';
 
 // ----------------------------------------------------------------------

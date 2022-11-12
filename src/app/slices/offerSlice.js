@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../../app/constants';
-import { setMessage } from '../message/messageSlice';
+
+import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../constants';
+import { setMessage } from './messageSlice';
 
 const initialState = {
     offers: [],

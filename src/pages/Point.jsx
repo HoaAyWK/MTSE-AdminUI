@@ -26,9 +26,9 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
 import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
-import { clearMessage } from '../features/message/messageSlice';
+import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { selectAllPoints, refresh, getPoints, deletePoint } from '../features/points/pointSlice';
+import { selectAllPoints, refresh, getPoints, deletePoint } from '../app/slices/pointSlice';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Name', alignRight: false },

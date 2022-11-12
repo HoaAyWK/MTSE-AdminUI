@@ -5,7 +5,7 @@ import ReactApexChart from 'react-apexcharts';
 
 import { useEffect } from 'react';
 import { action_status } from '../../app/constants';
-import { getStatistic } from '../../features/statistic/statisticSlice';
+import { getStatistic } from '../../app/slices/statisticSlice';
 
 const earningChartOptions = {
     chart: {

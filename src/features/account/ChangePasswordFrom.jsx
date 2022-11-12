@@ -7,11 +7,11 @@ import { Box, Paper, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { RHFTextField, FormProvider } from '../../components/hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { changePassword, refresh } from '../auth/authSlice';
-import { clearMessage } from '../message/messageSlice';
+import { changePassword, refresh } from '../../app/slices/authSlice';
+import { clearMessage } from '../../app/slices/messageSlice';
 import { action_status } from '../../app/constants';
 
 const PaperStyle = styled(Paper)(({theme}) => ({

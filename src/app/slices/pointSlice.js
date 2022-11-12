@@ -1,8 +1,7 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
-import { action_status, BASE_API_URL } from "../../app/constants";
-import { setMessage } from "../message/messageSlice";
-import { MESSAGE_VARIANT } from "../../app/constants";
+import { action_status, BASE_API_URL, MESSAGE_VARIANT } from "../constants";
+import { setMessage } from "./messageSlice";
 
 const pointsAdapter = createEntityAdapter();
 

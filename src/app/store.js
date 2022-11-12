@@ -1,15 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
-import jobReducer from '../features/jobs/jobSlice';
-import messageReducer from '../features/message/messageSlice';
-import categoryReducer from '../features/categories/categorySlice';
-import userReducer from '../features/users/userSlice';
-import pointReducer from '../features/points/pointSlice';
-import paymentReducer from '../features/payments/paymentSlice';
-import statisticReducer from '../features/statistic/statisticSlice';
-import feedbackReducer from '../features/feedbacks/feedbackSlice';
-import commentReducer from '../features/comments/commentSlice';
-import offerReducer from '../features/offers/offerSlice'
+import authReducer from './slices/authSlice';
+import jobReducer from './slices/jobSlice';
+import messageReducer from './slices/messageSlice';
+import categoryReducer from './slices/categorySlice';
+import userReducer from './slices/userSlice';
+import pointReducer from './slices/pointSlice';
+import paymentReducer from './slices/paymentSlice';
+import statisticReducer from './slices/statisticSlice';
+import feedbackReducer from './slices/feedbackSlice';
+import commentReducer from './slices/commentSlice';
+import offerReducer from './slices/offerSlice'
 
 export const store = configureStore({
     reducer: {

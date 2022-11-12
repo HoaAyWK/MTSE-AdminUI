@@ -6,12 +6,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Paper, Grid } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { RHFTextField, RHFRadioGroup, FormProvider } from '../../components/hook-form';
 import AvatarUploader from './AvatarUploader';
-import { useDispatch, useSelector } from 'react-redux';
-import { refresh, updateAccount } from '../auth/authSlice';
-import { clearMessage } from '../message/messageSlice';
+import { refresh, updateAccount } from '../../app/slices/authSlice';
+import { clearMessage } from '../../app/slices/messageSlice';
 import { action_status } from '../../app/constants';
 
 

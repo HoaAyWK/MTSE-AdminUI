@@ -7,10 +7,10 @@ import { LoadingButton } from '@mui/lab';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { login } from '../../../features/auth/authSlice';
+import { login } from '../../../app/slices/authSlice';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
-import { clearMessage } from '../../message/messageSlice';
+import { clearMessage } from '../../../app/slices/messageSlice';
 import { action_status } from '../../../app/constants';
 
 const AlertStyle = styled(Alert)(({ theme }) => ({

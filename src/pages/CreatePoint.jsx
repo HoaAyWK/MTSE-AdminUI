@@ -5,8 +5,8 @@ import { useSnackbar } from 'notistack';
 
 import BreadcrumbsRouter from '../components/BreadcrumbRouter';
 import Page from '../components/Page';
-import { clearMessage } from '../features/message/messageSlice';
-import { createPoint } from '../features/points/pointSlice';
+import { clearMessage } from '../app/slices/messageSlice';
+import { createPoint } from '../app/slices/pointSlice';
 import PointForm from '../features/points/PointForm';
 
 const breadcrumbNameMap = {

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { MESSAGE_VARIANT } from '../../app/constants';
+import { MESSAGE_VARIANT } from '../constants';
 
 const initialState = { 
     message: '',

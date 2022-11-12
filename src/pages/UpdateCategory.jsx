@@ -7,8 +7,8 @@ import { useParams } from 'react-router-dom';
 import BreadcrumbsRouter from '../components/BreadcrumbRouter';
 import Page from '../components/Page';
 import CategoryForm from '../features/categories/CategoryForm';
-import { clearMessage } from '../features/message/messageSlice';
-import { selectCategoryById, updateCategory } from '../features/categories/categorySlice';
+import { clearMessage } from '../app/slices/messageSlice';
+import { selectCategoryById, updateCategory } from '../app/slices/categorySlice';
 
 const breadcrumbNameMap = {
     '': 'Dashboard',

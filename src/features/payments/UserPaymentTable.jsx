@@ -20,7 +20,7 @@ import { action_status } from '../../app/constants';
 import { MoreMenu } from '../../components/tables';
 import MoreMenuItem from '../../components/tables/MoreMenuItem';
 import { fDate } from '../../utils/formatTime';
-import { getPayments, selectPaymentsByUser } from './paymentSlice'
+import { getPayments, selectPaymentsByUser } from '../../app/slices/paymentSlice'
 import SimpleTableListHead from '../../components/tables/SimpleTableListHead';
 import Iconify from '../../components/Iconify';
 
