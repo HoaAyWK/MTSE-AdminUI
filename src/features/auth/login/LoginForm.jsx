@@ -18,6 +18,14 @@ const AlertStyle = styled(Alert)(({ theme }) => ({
     marginBlockStart: theme.spacing(1)
 }));
 
+const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
 const LoginForm = () => {
     const dispatch = useDispatch();
     const [hiddenAlert, setHiddenAlert] = useState(0);
@@ -96,9 +104,9 @@ const LoginForm = () => {
                 </Link>
             </Stack>
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={status === action_status.LOADING ? true : false}>
+            <LoadingButtonSuccessStyle fullWidth size="large" type="submit" variant="contained" loading={status === action_status.LOADING ? true : false}>
                 Login
-            </LoadingButton>
+            </LoadingButtonSuccessStyle>
         </FormProvider>
     );
 };

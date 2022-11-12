@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Avatar, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Avatar, Box, Button, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { sentenceCase } from 'change-case';
 
@@ -11,6 +12,15 @@ import Label from '../../components/Label';
 import { fDate } from '../../utils/formatTime';
 import SimpleTableListHead from '../../components/tables/SimpleTableListHead';
 import MainCard from '../../components/MainCard';
+
+const ButtonOutlinedStyle = styled(Button)(({ theme }) => ({
+    borderColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.dark,
+        color: '#fff'
+    },
+    color: theme.palette.success.dark,
+}));
 
 const TABLE_HEAD = [
     { id: 'user', label: 'User', alignRight: false },
@@ -111,9 +121,9 @@ const RecentPaymentsTable = () => {
                         </Table>
                     </TableContainer>
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button component={RouterLink} to='/dashboard/payments' variant='outlined' size='small'>
+                        <ButtonOutlinedStyle component={RouterLink} to='/dashboard/payments' variant='outlined' size='small' color='success'>
                             View All
-                        </Button>
+                        </ButtonOutlinedStyle>
                     </Box>
                 </MainCard>
             ) : (

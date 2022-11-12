@@ -13,9 +13,9 @@ import {
     ListItemButton,
     ListItemSecondaryAction,
     ListItemText,
-    MenuItem
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { styled } from '@mui/material/styles';
 
 import Page from '../components/Page';
 import LetterAvatar from '../components/LetterAvatar';
@@ -27,6 +27,23 @@ import MainCard from '../components/MainCard';
 import { getFeedbacks, selectFeedbackByNumber } from '../app/slices/feedbackSlice';
 import { fToNow } from '../utils/formatTime';
 import RecentPaymentsTable from '../features/payments/RecentPaymentsTable';
+
+const ButtonStyle = styled(Button)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
+const ButtonOutlinedStyle = styled(Button)(({ theme }) => ({
+    borderColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.dark,
+        color: '#fff'
+    },
+    color: theme.palette.success.dark,
+}));
 
 const avatarSX = {
     width: 36,
@@ -42,6 +59,7 @@ const actionSX = {
     alignSelf: 'flex-start',
     transform: 'none'
 };
+
 
 const DashboardApp = () => {
     const [slot, setSlot] = useState('week');
@@ -93,23 +111,43 @@ const DashboardApp = () => {
                                     <Typography variant="h5" color='text.primary' fontWeight={400}>Earning</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Stack direction="row" alignItems="center" spacing={0}>
-                                        <Button
-                                            size="small"
-                                            onClick={() => setSlot('month')}
-                                            color={slot === 'month' ? 'primary' : 'secondary'}
-                                            variant={slot === 'month' ? 'outlined' : 'text'}
-                                        >
-                                            Month
-                                        </Button>
-                                        <Button
-                                            size="small"
-                                            onClick={() => setSlot('week')}
-                                            color={slot === 'week' ? 'primary' : 'secondary'}
-                                            variant={slot === 'week' ? 'outlined' : 'text'}
-                                        >
-                                            Week
-                                        </Button>
+                                    <Stack direction="row" alignItems="center" spacing={0} sx={{ color: '$fff' }}>
+                                        {slot === 'month' ? (
+                                            <ButtonStyle
+                                                size="small"
+                                                onClick={() => setSlot('month')}
+                                                variant='contained'
+                                            >
+                                                Month
+                                            </ButtonStyle>
+                                        ) : (
+                                            <Button
+                                                size='small'
+                                                onClick={() => setSlot('month')}
+                                                color='success'
+                                                variant='text'
+                                            >
+                                                Month
+                                            </Button>
+                                        )}
+                                        {slot === 'week' ? (
+                                            <ButtonStyle
+                                                size="small"
+                                                onClick={() => setSlot('week')}
+                                                variant='contained'
+                                            >                                           
+                                                Week
+                                            </ButtonStyle>
+                                        ) : (
+                                            <Button
+                                                size='small'
+                                                onClick={() => setSlot('week')}
+                                                color='success'
+                                                variant='text'
+                                            >
+                                                Week
+                                            </Button>
+                                        )}
                                     </Stack>
                                 </Grid>
                             </Grid>
@@ -169,9 +207,9 @@ const DashboardApp = () => {
                                     ))}
                                 </List>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', 'alignItems': 'center', marginBlock: 2 }}>
-                                    <Button component={RouterLink} to='/dashboard/feedbacks' variant='outlined' size='small'>
+                                    <ButtonOutlinedStyle component={RouterLink} to='/dashboard/feedbacks' variant='outlined' size='small'>
                                         View all
-                                    </Button>
+                                    </ButtonOutlinedStyle>
                                 </Box>
                             </MainCard>
                         </Grid>

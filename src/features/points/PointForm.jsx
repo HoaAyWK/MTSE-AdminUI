@@ -29,6 +29,14 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
     }
 }));
 
+const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
 const PointForm = (props) => {
     const { pointAction, point } = props;
     const dispatch = useDispatch();
@@ -101,9 +109,9 @@ const PointForm = (props) => {
                                 <ButtonStyle component={RouterLink} to="/dashboard/points" variant='contained' sx={{ mr: 1 }}>
                                     Cancel
                                 </ButtonStyle>
-                                <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                                <LoadingButtonSuccessStyle type='submit' variant='contained' loading={isSubmitting}>
                                     Save
-                                </LoadingButton>
+                                </LoadingButtonSuccessStyle>
                             </Box>
                         </Stack>
                     </PaperStyle>

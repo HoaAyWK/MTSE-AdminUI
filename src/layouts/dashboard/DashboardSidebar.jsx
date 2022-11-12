@@ -8,6 +8,7 @@ import Logo from '../../components/Logo';
 import Scrollbar from '../../components/Scrollbar';
 import NavSection from '../../components/NavSection';
 import navConfig from './NavConfig';
+import LetterAvatar from '../../components/LetterAvatar';
 
 const DRAWER_WIDTH = 280;
 
@@ -51,10 +52,10 @@ const DashboardSidebar = ({ isOpenSidebar, onCloseSidebar, user }) => {
                 <Link underline="none" component={RouterLink} to="/dashboard/users/profile">
                     <AccountStyle>
                         { user?.avatar?.url ? (
-                                <Avatar src={`${user?.avatar.url}`} alt={`${user.name}`} />
+                                <Avatar src={`${user?.avatar.url}`} alt={`${user?.name}`} />
                             )
                         :
-                            (<Avatar>{user?.name[0]}</Avatar>)}
+                            (<LetterAvatar name={user?.name} />)}
                         <Box sx={{ ml: 2 }}>
                             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
                                 {user?.name}

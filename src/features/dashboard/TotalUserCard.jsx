@@ -16,7 +16,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: theme.palette.secondary.light,
+        background: theme.palette.success.dark,
         borderRadius: '50%',
         top: -85,
         right: -95,
@@ -30,7 +30,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: theme.palette.secondary.light,
+        background: theme.palette.success.dark,
         borderRadius: '50%',
         top: -125,
         right: -15,
@@ -60,7 +60,7 @@ const TotalUserCard = ({isLoading, total}) => {
                                                 sx={{
                                                     ...theme.typography.commonAvatar,
                                                     ...theme.typography.largeAvatar,
-                                                    backgroundColor: theme.palette.info.main,
+                                                    backgroundColor: theme.palette.success.main,
                                                     mt: 1
                                                 }}
                                             >
@@ -80,8 +80,8 @@ const TotalUserCard = ({isLoading, total}) => {
                                         <Avatar
                                             sx={{
                                                 ...theme.typography.smallAvatar,
-                                                backgroundColor: theme.palette.info.lighter,
-                                                color: theme.palette.info.main
+                                                backgroundColor: theme.palette.success.lighter,
+                                                color: theme.palette.success.main
                                             }}
                                         >
                                             <Iconify icon='ant-design:rise-outlined' width={25} height={25} />

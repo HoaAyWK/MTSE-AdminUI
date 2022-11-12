@@ -38,9 +38,9 @@ const NavItem = ({ item, active }) => {
     };
 
     const activeRootStyle = {
-        color: 'primary.main',
+        color: 'success.dark',
         fontWeight: 'fontWeightMedium',
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+        bgcolor: alpha(theme.palette.success.main, theme.palette.action.selectedOpacity),
     };
 
     const activeSubStyle = {

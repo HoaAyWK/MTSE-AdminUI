@@ -58,7 +58,7 @@ const EarningChart = (props) => {
     useEffect(() => {
         setOptions((prevState) => ({
             ...prevState,
-            colors: [theme.palette.primary.main, theme.palette.primary[700]],
+            colors: [theme.palette.success.main, theme.palette.success[700]],
             xaxis: {
                 categories:
                     slot === 'month'
