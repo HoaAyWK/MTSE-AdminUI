@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     Avatar,
@@ -12,24 +12,19 @@ import {
     Divider,
     Card,
     CardContent,
-    TableContainer,
-    TableBody,
-    TableRow,
-    TableCell,
     Button
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
 import Page from '../components/Page';
-import { getJobs, selectJobById } from '../features/jobs/jobSlice';
+import { getJobs, selectJobById } from '../app/slices/jobSlice';
 import { action_status } from '../app/constants';
 import LetterAvatar from '../components/LetterAvatar';
 import Label from '../components/Label';
-import { fDate, fDateTime } from '../utils/formatTime';
-import Iconify from '../components/Iconify';
+import { fDate } from '../utils/formatTime';
 import JobInfoLine from '../features/jobs/JobInfoLine';
-import { getOffersByJob } from '../features/offers/offerSlice';
+import { getOffersByJob } from '../app/slices/offerSlice';
 import Offer from '../features/offers/Offer';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({

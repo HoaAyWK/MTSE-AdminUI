@@ -24,11 +24,11 @@ import { useSnackbar } from 'notistack';
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { deleteCategory, getCategories, refresh, selectAllCategories } from '../features/categories/categorySlice';
+import { deleteCategory, getCategories, refresh, selectAllCategories } from '../app/slices/categorySlice';
 import { action_status } from '../app/constants';
 import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
 import { fDateTimeSuffix } from '../utils/formatTime';
-import { clearMessage } from '../features/message/messageSlice';
+import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 

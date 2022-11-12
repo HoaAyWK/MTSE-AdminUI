@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Card, Link, Container, Typography  } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import useResponsive from '../hooks/useResponsive';
@@ -10,7 +10,6 @@ import Page from '../components/Page';
 import Logo from '../components/Logo';
 import { LoginForm } from '../features/auth/login';
 import { action_status } from '../app/constants';
-import { clearMessage } from '../features/message/messageSlice';
 
 const RootStyle = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {

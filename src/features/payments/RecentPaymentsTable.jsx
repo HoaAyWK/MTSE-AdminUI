@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Avatar, Box, Button, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { getPayments, selectPaymentsByNumber } from './paymentSlice';
+import { Avatar, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { sentenceCase } from 'change-case';
 
+import { getPayments, selectPaymentsByNumber } from '../../app/slices/paymentSlice';
 import { action_status } from '../../app/constants';
 import LetterAvatar from '../../components/LetterAvatar';
 import Label from '../../components/Label';

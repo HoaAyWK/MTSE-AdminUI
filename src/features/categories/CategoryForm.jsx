@@ -9,9 +9,9 @@ import { LoadingButton } from '@mui/lab';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { FormProvider, RHFTextField, RHFSelect } from '../../components/hook-form';
-import { getCategories, refresh, selectAllCategories } from './categorySlice';
+import { getCategories, refresh, selectAllCategories } from '../../app/slices/categorySlice';
 import { action_status, MESSAGE_VARIANT } from '../../app/constants';
-import { setMessage } from '../message/messageSlice';
+import { setMessage } from '../../app/slices/messageSlice';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
     color: theme.palette.main,

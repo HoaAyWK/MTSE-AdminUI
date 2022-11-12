@@ -23,9 +23,8 @@ import Label from '../../components/Label';
 import { action_status } from '../../app/constants';
 import { MoreMenu } from '../../components/tables';
 import MoreMenuItem from '../../components/tables/MoreMenuItem';
-import { getJobs } from './jobSlice';
 import { fDate } from '../../utils/formatTime';
-import { selectJobsByUser } from './jobSlice';
+import { selectJobsByUser, getJobs } from '../../app/slices/jobSlice';
 import SimpleTableListHead from '../../components/tables/SimpleTableListHead';
 
 const TABLE_HEAD = [

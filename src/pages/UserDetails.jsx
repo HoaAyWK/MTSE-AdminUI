@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { sentenceCase } from 'change-case';
 
-import { getAllUsers, selectUserById } from '../features/users/userSlice';
+import { getAllUsers, selectUserById } from '../app/slices/userSlice';
 import Page from '../components/Page';
 import { useEffect } from 'react';
 import { action_status } from '../app/constants';

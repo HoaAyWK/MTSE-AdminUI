@@ -6,9 +6,8 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 import Page from '../components/Page';
 import BreadcrumbRouter from '../components/BreadcrumbRouter';
-import Iconify from '../components/Iconify';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { getCurrentUser } from '../features/auth/authSlice';
+import { getCurrentUser } from '../app/slices/authSlice';
 import { AccountForm, ChangePasswordForm } from '../features/account';
 
 

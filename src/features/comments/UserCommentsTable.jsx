@@ -25,7 +25,7 @@ import MoreMenuItem from '../../components/tables/MoreMenuItem';
 import { fDate } from '../../utils/formatTime';
 import SimpleTableListHead from '../../components/tables/SimpleTableListHead';
 import Iconify from '../../components/Iconify';
-import { getCommentsByUser } from './commentSlice';
+import { getCommentsByUser } from '../../app/slices/commentSlice';
 import LetterAvatar from '../../components/LetterAvatar';
 
 const TABLE_HEAD = [

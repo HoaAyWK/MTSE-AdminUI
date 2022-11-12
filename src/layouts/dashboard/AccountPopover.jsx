@@ -5,7 +5,7 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@
 import { useDispatch } from 'react-redux';
 
 import MenuPopover from '../../components/MenuPopover';
-import { logout } from '../../features/auth/authSlice';
+import { logout } from '../../app/slices/authSlice';
 
 const MENU_OPTIONS = [
     {

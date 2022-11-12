@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { action_status, BASE_API_URL } from '../../app/constants';
+
+import { action_status, BASE_API_URL } from '../constants';
 
 const feedbacksAdapter = createEntityAdapter();
 

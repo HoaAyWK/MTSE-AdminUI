@@ -27,9 +27,9 @@ import Label from '../components/Label';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
 import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
-import { clearMessage } from '../features/message/messageSlice';
+import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { selectAllUsers, getAllUsers, banUser, refresh } from '../features/users/userSlice';
+import { selectAllUsers, getAllUsers, banUser, refresh } from '../app/slices/userSlice';
 import LetterAvatar from '../components/LetterAvatar';
 
 const TABLE_HEAD = [

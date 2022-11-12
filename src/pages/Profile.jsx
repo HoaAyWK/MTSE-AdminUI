@@ -5,7 +5,7 @@ import { Container, Box, Typography, Stack, Avatar, Grid, Link as MuiLink } from
 import Page from '../components/Page';
 import BreadcrumbRouter from '../components/BreadcrumbRouter';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCurrentUser } from '../features/auth/authSlice';
+import { getCurrentUser } from '../app/slices/authSlice';
 import Iconify from '../components/Iconify';
 import CardInfo from '../components/CardInfo';
 import LetterAvatar from '../components/LetterAvatar';

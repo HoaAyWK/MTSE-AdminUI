@@ -19,13 +19,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Page from '../components/Page';
 import LetterAvatar from '../components/LetterAvatar';
-import Iconify from '../components/Iconify';
 import { EarningCard, TotalUserCard } from '../features/dashboard';
 import EarningChart from '../components/chart/EarningChart';
 import { action_status } from '../app/constants';
-import { getStatistic } from '../features/statistic/statisticSlice';
+import { getStatistic } from '../app/slices/statisticSlice';
 import MainCard from '../components/MainCard';
-import { getFeedbacks, selectFeedbackByNumber } from '../features/feedbacks/feedbackSlice';
+import { getFeedbacks, selectFeedbackByNumber } from '../app/slices/feedbackSlice';
 import { fToNow } from '../utils/formatTime';
 import RecentPaymentsTable from '../features/payments/RecentPaymentsTable';
 

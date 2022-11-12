@@ -6,8 +6,8 @@ import { useSnackbar } from 'notistack';
 import BreadcrumbsRouter from '../components/BreadcrumbRouter';
 import Page from '../components/Page';
 import CategoryForm from '../features/categories/CategoryForm';
-import { clearMessage } from '../features/message/messageSlice';
-import { createCategory } from '../features/categories/categorySlice';
+import { clearMessage } from '../app/slices/messageSlice';
+import { createCategory } from '../app/slices/categorySlice';
 
 const breadcrumbNameMap = {
     '': 'Dashboard',

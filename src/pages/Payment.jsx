@@ -26,9 +26,8 @@ import Label from '../components/Label';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
 import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
-import { clearMessage } from '../features/message/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { getPayments, selectAllPayments } from '../features/payments/paymentSlice';
+import { getPayments, selectAllPayments } from '../app/slices/paymentSlice';
 import { fDateTimeSuffix } from '../utils/formatTime';
 import LetterAvatar from '../components/LetterAvatar';
 
