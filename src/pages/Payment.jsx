@@ -25,7 +25,7 @@ import Page from '../components/Page';
 import Label from '../components/Label';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
-import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
+import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 import { getPayments, selectAllPayments } from '../app/slices/paymentSlice';
 import { fDateTimeSuffix } from '../utils/formatTime';
@@ -73,8 +73,6 @@ const Payment = () => {
 
     const [order, setOrder] = useState('asc');
 
-    const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('create');
 
     const [filterName, setFilterName] = useState('');
@@ -97,30 +95,6 @@ const Payment = () => {
         const isAsc = orderBy === property && order === 'asc';
             setOrder(isAsc ? 'desc' : 'asc');
             setOrderBy(property);
-    };
-
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = payments.map((n) => n.user.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -188,35 +162,26 @@ const Payment = () => {
                         </Typography>
                     </Stack>
                     <Card>
-                        <TableListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} title='payments'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='payments'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
-                                <TableListHead
+                                <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
                                     rowCount={payments.length}
-                                    numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                 {filteredPayments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                     const { id, createdAt, user, status, credit, paymentIntent } = row;
-                                    const isItemSelected = selected.indexOf(user.name) !== -1;
                 
                                     return (
                                     <TableRow
                                         hover
                                         key={id}
                                         tabIndex={-1}
-                                        role="checkbox"
-                                        selected={isItemSelected}
-                                        aria-checked={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox">
-                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, user.name)} />
-                                        </TableCell>
                                         <TableCell align="left" width={350}>
                                             <Box
                                                 sx={{ display: 'flex', alignItems: 'center' }}

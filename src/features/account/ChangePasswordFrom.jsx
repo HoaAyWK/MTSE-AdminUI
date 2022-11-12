@@ -25,6 +25,14 @@ const PaperStyle = styled(Paper)(({theme}) => ({
     zIndex: 0
 }));
 
+const LoadingButtonStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
 const ChangePasswordFrom = (props) => {
     const { user } = props;
     const dispatch = useDispatch();
@@ -89,14 +97,14 @@ const ChangePasswordFrom = (props) => {
                     <Box
                         sx={{ display: 'flex', justifyContent: 'flex-end' }}
                     >
-                        <LoadingButton
+                        <LoadingButtonStyle
                             size="large"
                             type="submit"
                             variant="contained"
                             loading={changedPasswordStatus === action_status.LOADING ? true : false}
                         >
                             Save Changes
-                        </LoadingButton>
+                        </LoadingButtonStyle>
                     </Box>
                 </Stack>
             </PaperStyle>

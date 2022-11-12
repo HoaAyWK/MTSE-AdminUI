@@ -16,7 +16,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: theme.palette.info.main,
+        background: theme.palette.success.dark,
         borderRadius: '50%',
         top: -85,
         right: -95,
@@ -30,7 +30,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
         position: 'absolute',
         width: 210,
         height: 210,
-        background: theme.palette.info.main,
+        background: theme.palette.success.dark,
         borderRadius: '50%',
         top: -125,
         right: -15,
@@ -61,7 +61,7 @@ const EarningCard = ({ isLoading, total }) => {
                                                 sx={{
                                                     ...theme.typography.commonAvatar,
                                                     ...theme.typography.largeAvatar,
-                                                    backgroundColor: theme.palette.secondary.main,
+                                                    backgroundColor: theme.palette.success.main,
                                                     mt: 1
                                                 }}
                                             >
@@ -81,8 +81,8 @@ const EarningCard = ({ isLoading, total }) => {
                                         <Avatar
                                             sx={{
                                                 ...theme.typography.smallAvatar,
-                                                backgroundColor: theme.palette.secondary.lighter,
-                                                color: theme.palette.secondary.main
+                                                backgroundColor: theme.palette.success.lighter,
+                                                color: theme.palette.success.main
                                             }}
                                         >
                                             <Iconify icon='ant-design:rise-outlined' width={25} height={25} />

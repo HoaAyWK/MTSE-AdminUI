@@ -57,7 +57,7 @@ const AccountSettings = () => {
             <PageStyle title="Account Settings">
                 <TabContext value={value} sx={{ backgroundColor: 'transparent' }}>
                     <Box >
-                        <TabList onChange={handleChangeValue} aria-label='account-settings-tabs'>
+                        <TabList onChange={handleChangeValue} aria-label='account-settings-tabs' textColor='text.primary'>
                             <Tab label='General' value='1' />
                             <Tab label='Change Password' value='2' />
                         </TabList>

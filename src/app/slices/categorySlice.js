@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../constants';
@@ -154,5 +154,10 @@ export const {
 
 const { reducer, actions } = categorySlice;
 export const { refresh } = actions;
+
+export const selectRootCategories = createSelector(
+    [selectAllCategories],
+    (categories) => categories.filter(category => !category.parent)
+);
 
 export default reducer;

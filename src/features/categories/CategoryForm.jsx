@@ -7,11 +7,11 @@ import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoadingButton } from '@mui/lab';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 import { FormProvider, RHFTextField, RHFSelect } from '../../components/hook-form';
-import { getCategories, refresh, selectAllCategories } from '../../app/slices/categorySlice';
+import { getCategories, refresh, selectRootCategories } from '../../app/slices/categorySlice';
 import { action_status, MESSAGE_VARIANT } from '../../app/constants';
-import { setMessage } from '../../app/slices/messageSlice';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
     color: theme.palette.main,
@@ -30,12 +30,22 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
     }
 }));
 
+const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
 const CategoryForm = (props) => {
     const { categoryAction, category } = props;
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const categories = useSelector(selectAllCategories);
+    const categories = useSelector(selectRootCategories);
     const { status, updated, added } = useSelector((state) => state.categories);
+    const { enqueueSnackbar } = useSnackbar();
+
 
     const CategorySchema = Yup.object().shape({
         id: Yup.string(),
@@ -81,14 +91,12 @@ const CategoryForm = (props) => {
 
     useEffect(() => {
         if (added) {
-            dispatch(setMessage({ message: 'Created Category', variant: MESSAGE_VARIANT.SUCCESS }));
-            dispatch(refresh());
+            enqueueSnackbar('Created successfully', { variant: 'success' });
             navigate('/dashboard/categories');
         }
 
         if (updated) {
-            dispatch(setMessage({ message: 'Updated Category', variant: MESSAGE_VARIANT.SUCCESS }));
-            dispatch(refresh());
+            enqueueSnackbar('Updated successfully', { variant: 'success' });
             navigate('/dashboard/categories');
         }
 
@@ -96,7 +104,7 @@ const CategoryForm = (props) => {
             dispatch(getCategories());
         }
 
-    }, [dispatch, navigate, status, updated, added]);
+    }, [dispatch, navigate, enqueueSnackbar, status, updated, added]);
 
     if (status === action_status.LOADING) {
         return (
@@ -121,9 +129,9 @@ const CategoryForm = (props) => {
                                     <ButtonStyle component={RouterLink} to="/dashboard/categories" variant='contained' sx={{ mr: 1 }}>
                                         Cancel
                                     </ButtonStyle>
-                                    <LoadingButton type='submit' variant='contained' loading={isSubmitting}>
+                                    <LoadingButtonSuccessStyle type='submit' variant='contained' loading={isSubmitting}>
                                         Save
-                                    </LoadingButton>
+                                    </LoadingButtonSuccessStyle>
                                 </Box>
                             </Stack>
                         </PaperStyle>

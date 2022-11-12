@@ -28,6 +28,14 @@ const PaperStyle = styled(Paper)(({theme}) => ({
     zIndex: 0
 }));
 
+const LoadingButtonStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
+
 const BoxFieldStyle = styled('div')(({theme}) => ({
     gap: '24px 16px',
     display: 'grid',
@@ -125,9 +133,9 @@ const AccountForm = (props) => {
                         <Box
                             sx={{ display: 'flex', justifyContent: 'flex-end' }}
                         >
-                            <LoadingButton size="large" type="submit" variant="contained" loading={updateStatus === action_status.LOADING ? true : false}>
+                            <LoadingButtonStyle size="large" type="submit" variant="contained" loading={updateStatus === action_status.LOADING ? true : false}>
                                 Save Changes
-                            </LoadingButton>
+                            </LoadingButtonStyle>
                         </Box>
                     </PaperStyle>
                 </Grid>

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
 import {
+    Avatar,
     Box,
     Card,
     Table,
     Stack,
-    Checkbox,
     TableRow,
     TableBody,
     TableCell,
@@ -17,29 +16,29 @@ import {
     TableContainer,
     TablePagination,
     Alert,
-    Avatar,
-    Tooltip,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSnackbar } from 'notistack';
 
-import Page from '../components/Page';
-import Label from '../components/Label';
+import AlertDialog from '../components/AlertDialog';
 import SearchNotFound from '../components/SearchNotFound';
-import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
-import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { getJobs, selectAllJobs } from '../app/slices/jobSlice';
-import { fDate } from '../utils/formatTime';
 import LetterAvatar from '../components/LetterAvatar';
-import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
+import MoreMenuItem from '../components/tables/MoreMenuItem';
+import Page from '../components/Page';
+import { getTransactions, refresh, selectAllTransactions, updateTransaction } from '../app/slices/transactionSlice';
+import { action_status } from '../app/constants';
+import Label from '../components/Label';
+import { fDate } from '../utils/formatTime';
+import { clearMessage } from '../app/slices/messageSlice';
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Name', alignRight: false },
-    { id: 'category', label: 'Category', alignRight: false},
-    { id: 'owner', label: 'Owner', alignRight: false },
-    { id: 'status', label: 'Status', alignRight: false },
-    { id: 'createdAt', label: 'Created At', alignRight: false },
-    { id: '', label: '', alignRight: false }
+    { id: 'user', label: 'User', alignRight: false },
+    { id: 'creditCardReceiver', label: 'Credit Card', alignRight: false },
+    { id: 'total', label: 'Total', alignRight: true},
+    { id: 'status', label: 'Status', alignRight: false},
+    { id: 'createdAt', label: 'Created At', alignRight: false},
+    { id: '', label: '', alignRight: false },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -66,34 +65,58 @@ function applySortFilter(array, comparator, query) {
         return a[1] - b[1];
     });
     if (query) {
-        return filter(array, (_job) => _job.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+        return filter(array, (item) => item.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
 }
 
-const Job = () => {
+const Transaction = () => {
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
 
-    const [orderBy, setOrderBy] = useState('name');
+    const [orderBy, setOrderBy] = useState('createdAt');
 
     const [filterName, setFilterName] = useState('');
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const [open, setOpen] = useState(false);
+
     const dispatch = useDispatch();
 
-    const jobs = useSelector(selectAllJobs);
+    const transactions = useSelector(selectAllTransactions);
 
-    const { status } = useSelector((state) => state.jobs);
+    const { status, isUpdated } = useSelector((state) => state.transactions);
+
+    const { message } = useSelector((state) => state.message);
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        dispatch(clearMessage());
+    }, [dispatch]);
 
     useEffect(() => {
         if (status === action_status.IDLE) {
-            dispatch(getJobs());
+            dispatch(getTransactions());
         }
-
     }, [dispatch, status]);
+
+    useEffect(() => {
+        if (isUpdated) {
+            enqueueSnackbar('Finised trannsaction', { variant: 'success' });
+            dispatch(getTransactions());
+            dispatch(refresh());
+        }
+    }, [isUpdated, dispatch, enqueueSnackbar]);
+
+    useEffect(() => {
+        if (message) {
+            enqueueSnackbar(message, { variant: 'error' });
+            dispatch(clearMessage());
+        }
+    }, [message, dispatch, enqueueSnackbar])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -114,9 +137,21 @@ const Job = () => {
         setFilterName(event.target.value);
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClickFinish = (transactionId) => {
+        dispatch(updateTransaction(transactionId));
+    };
+
     if (status === action_status.LOADING) {
         return (
-            <Page title='jobs'>
+            <Page title='transactions'>
                 <Container maxWidth='xl'>
                     <Box 
                         sx={{
@@ -134,8 +169,8 @@ const Job = () => {
         )
     } else if (status === action_status.FAILED) {
         return (
-            <Page title='jobs'>
-                <Container>
+            <Page title='transactions'>
+                <Container maxWidth='xl'>
                 <Box 
                         sx={{
                             width: '100%',
@@ -151,35 +186,34 @@ const Job = () => {
             </Page>
         )
     } else if (status === action_status.SUCCEEDED) {
-        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - jobs.length) : 0;
+        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactions.length) : 0;
 
-        const filteredJobs = applySortFilter(jobs, getComparator(order, orderBy), filterName);
+        const filteredTransactions = applySortFilter(transactions, getComparator(order, orderBy), filterName);
 
-        const isJobNotFound = filteredJobs.length === 0;
+        const isTransactionNotFound = filteredTransactions.length === 0;
 
         return (
-            <Page title="Jobs">
+            <Page title="Transactions">
                 <Container maxWidth='xl'>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" >
-                            Jobs
+                            Transactions
                         </Typography>
                     </Stack>
-            
                     <Card>
-                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='job'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='transactions'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={jobs.length}
+                                    rowCount={transactions.length}
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                {filteredJobs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, name, owner, category, status, createdAt } = row;
+                                {filteredTransactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                    const { id, createdAt, user, status, total, creditCardReceiver } = row;
                 
                                     return (
                                     <TableRow
@@ -187,52 +221,56 @@ const Job = () => {
                                         key={id}
                                         tabIndex={-1}
                                     >
-                                        <TableCell align="left" width={230}>
-                                            {name.length > 20 ? (
-                                                <Tooltip title={name}>
-                                                    <Typography variant='body2'>
-                                                        {`${name.slice(0, 20)}...`}
-                                                    </Typography>
-                                                </Tooltip>
-                                                ) : (name)      
-                                            }
-                                        </TableCell>
-                                        <TableCell align="left" width={230}>{category?.name}</TableCell>
-                                        <TableCell align="left" width={230}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                {owner?.avatar?.url ? (
-                                                    <Avatar src={owner.avatar.url} alt={owner.name} />
+                                        <TableCell align="left" width={300}>
+                                            <Box
+                                                sx={{ display: 'flex', alignItems: 'center' }}
+                                            >
+                                                {user?.avatar?.url ? (
+                                                    <Avatar src={user.avatar.url} alt={user?.name} />
                                                 ) : (
-                                                    <LetterAvatar name={owner.name} sx={{ mr: 1 }} />
+                                                    <LetterAvatar name={user?.name} />
                                                 )}
-                                               <Typography
-                                                    component={RouterLink}
-                                                    to={`/dashboard/users/${id}`}
-                                                    color='text.secondary'
-                                                    sx={{ ml: 1, textDecoration: 'none', '&:hover': { textDecoration: 'underline' }}}
-                                                    variant='body1'
+                                                <Box
+                                                    sx={{ ml: 1, display: 'flex', flexDirection: 'column' }}
                                                 >
-                                                    {owner?.name}
-                                                </Typography>
+                                                    <Typography
+                                                        component={RouterLink}
+                                                        to={`/dashboard/users/${user?.id}`} 
+                                                        color='text.primary'
+                                                        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' }}}
+                                                        variant='body1'
+                                                    >
+                                                        {user?.name}
+                                                    </Typography>
+                                                    <Typography
+                                                        color='text.secondary'
+                                                        variant='caption'
+                                                    >
+                                                        {user?.email}
+                                                    </Typography>
+                                                </Box>
                                             </Box>
                                         </TableCell>
-                                        <TableCell align="left">
-                                            <Label
-                                                variant="ghost"
-                                                color={(status === 'Open' && 'success') ||
-                                                    (status === 'SelectedFreelancer' && 'warning') ||
-                                                    (status === 'PendingStart' && 'warning') ||
-                                                    (status === 'Processing' && 'info') ||
-                                                    (status === 'Closed' && 'secondary') || 'error'}
-                                            >
-                                                {sentenceCase(status)}
+                                        <TableCell align="left" width={230}>{creditCardReceiver}</TableCell>
+                                        <TableCell align="right" width={100}>{`$${total}`}</TableCell>
+                                        <TableCell align="left" width={80}>
+                                            <Label variant="ghost" color={(status === false && 'warning') || 'success'}>
+                                                {status ? 'Success' : 'Pending' }
                                             </Label>
                                         </TableCell>
                                         <TableCell align="left">{fDate(createdAt)}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
-                                                <MoreMenuLinkItem to={`/dashboard/jobs/${id}`} iconName='eva:eye-outline' title='Details' />
-                                                <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" id={id}/>
+                                                <MoreMenuItem title="Finish" iconName="ant-design:check-circle-twotone" id={id} handleClick={handleOpen} />
+                                                <AlertDialog
+                                                    open={open}
+                                                    handleClose={handleClose}
+                                                    title='Confrim Finish'
+                                                    content='Are you sure to finish this transaction'
+                                                    color='success'
+                                                    handleConfirm={handleClickFinish}
+                                                    itemId={id}
+                                                />
                                             </ MoreMenu>
                                         </TableCell>
                                     </TableRow>
@@ -245,7 +283,7 @@ const Job = () => {
                                 )}
                                 </TableBody>
                 
-                                {isJobNotFound && (
+                                {isTransactionNotFound && (
                                 <TableBody>
                                     <TableRow>
                                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -259,7 +297,7 @@ const Job = () => {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={jobs.length}
+                            count={transactions.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -269,7 +307,8 @@ const Job = () => {
                 </Container>
             </Page>
         );
+        
     }
-};
+}
 
-export default Job;
+export default Transaction;

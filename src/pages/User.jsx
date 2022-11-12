@@ -8,7 +8,6 @@ import {
     Table,
     Stack,
     Avatar,
-    Checkbox,
     TableRow,
     TableBody,
     TableCell,
@@ -26,7 +25,7 @@ import Page from '../components/Page';
 import Label from '../components/Label';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
-import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
+import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 import { selectAllUsers, getAllUsers, banUser, refresh } from '../app/slices/userSlice';
@@ -75,8 +74,6 @@ const User = () => {
 
     const [order, setOrder] = useState('asc');
 
-    const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('name');
 
     const [filterName, setFilterName] = useState('');
@@ -118,30 +115,6 @@ const User = () => {
         const isAsc = orderBy === property && order === 'asc';
             setOrder(isAsc ? 'desc' : 'asc');
             setOrderBy(property);
-    };
-
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = users.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -210,35 +183,26 @@ const User = () => {
                     </Stack>
             
                     <Card>
-                        <TableListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} title='user'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='user'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
-                                <TableListHead
+                                <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
                                     rowCount={users.length}
-                                    numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                 {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                     const { id, name, email, avatar, gender, status, roles } = row;
-                                    const isItemSelected = selected.indexOf(name) !== -1;
                 
                                     return (
                                     <TableRow
                                         hover
                                         key={id}
                                         tabIndex={-1}
-                                        role="checkbox"
-                                        selected={isItemSelected}
-                                        aria-checked={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox">
-                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                                        </TableCell>
                                         <TableCell align="left" width={300}>
                                             <Box
                                                 sx={{

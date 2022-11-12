@@ -5,10 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Stack, IconButton, InputAdornment } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
+
+const LoadingButtonSuccessStyle = styled(LoadingButton)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
 
 const RegisterForm = () => {
     const navigate = useNavigate();
@@ -68,9 +77,9 @@ const RegisterForm = () => {
                 }}
             />
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+            <LoadingButtonSuccessStyle fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
                 Register
-            </LoadingButton>
+            </LoadingButtonSuccessStyle>
         </Stack>
         </FormProvider>
     );

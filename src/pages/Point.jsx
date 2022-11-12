@@ -18,6 +18,7 @@ import {
     TablePagination,
     Alert,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
@@ -25,10 +26,18 @@ import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
-import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
+import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 import { selectAllPoints, refresh, getPoints, deletePoint } from '../app/slices/pointSlice';
+
+const ButtonStyle = styled(Button)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Name', alignRight: false },
@@ -71,8 +80,6 @@ const Point = () => {
 
     const [order, setOrder] = useState('asc');
 
-    const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('name');
 
     const [filterName, setFilterName] = useState('');
@@ -110,30 +117,6 @@ const Point = () => {
         const isAsc = orderBy === property && order === 'asc';
             setOrder(isAsc ? 'desc' : 'asc');
             setOrderBy(property);
-    };
-
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = points.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -199,41 +182,32 @@ const Point = () => {
                         <Typography variant="h4" >
                             Points
                         </Typography>
-                        <Button variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" />}>
-                            New Point
-                        </Button>
+                        <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>}>
+                           New Point
+                        </ButtonStyle>
                     </Stack>
             
                     <Card>
-                        <TableListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} title='point'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='point'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
-                                <TableListHead
+                                <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
                                     rowCount={points.length}
-                                    numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                 {filteredPoints.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                     const { id, name, points, price } = row;
-                                    const isItemSelected = selected.indexOf(name) !== -1;
                 
                                     return (
                                     <TableRow
                                         hover
                                         key={id}
                                         tabIndex={-1}
-                                        role="checkbox"
-                                        selected={isItemSelected}
-                                        aria-checked={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox">
-                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                                        </TableCell>
                                         <TableCell align="left" width={400}>{name}</TableCell>
                                         <TableCell align="left" widht={400}>{points}</TableCell>
                                         <TableCell align="left">{`$${price}`}</TableCell>

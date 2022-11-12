@@ -7,7 +7,6 @@ import {
     Table,
     Stack,
     Button,
-    Checkbox,
     TableRow,
     TableBody,
     TableCell,
@@ -18,6 +17,7 @@ import {
     TablePagination,
     Alert,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
@@ -26,11 +26,20 @@ import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { deleteCategory, getCategories, refresh, selectAllCategories } from '../app/slices/categorySlice';
 import { action_status } from '../app/constants';
-import { TableListHead, TableListToolbar, MoreMenu } from '../components/tables';
+import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { fDateTimeSuffix } from '../utils/formatTime';
 import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
+import AlertDialog from '../components/AlertDialog';
+
+const ButtonStyle = styled(Button)(({ theme }) => ({
+    backgroundColor: theme.palette.success.dark,
+    '&:hover': {
+        backgroundColor: theme.palette.success.main,
+    },
+    color: '#fff'
+}));
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Name', alignRight: false },
@@ -63,7 +72,7 @@ function applySortFilter(array, comparator, query) {
         return a[1] - b[1];
     });
     if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+        return filter(array, (item) => item.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
 }
@@ -73,17 +82,21 @@ const Category = () => {
 
     const [order, setOrder] = useState('asc');
 
-    const [selected, setSelected] = useState([]);
-
     const [orderBy, setOrderBy] = useState('name');
 
     const [filterName, setFilterName] = useState('');
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const [open, setOpen] = useState(false);
+
     const dispatch = useDispatch();
+
     const categories = useSelector(selectAllCategories);
-    const { deleted } = useSelector((state) => state.categories);
+
+    const { deleted, updated } = useSelector((state) => state.categories);
+
+    const { message } = useSelector((state) => state.message);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -98,45 +111,37 @@ const Category = () => {
     }, [dispatch, status]);
 
     useEffect(() => {
+        if (updated) {
+            dispatch(getCategories());
+        }
+    }, [updated])
+
+    useEffect(() => {
         if (deleted) {
             enqueueSnackbar("Deleted successfully", { variant: 'success' });
             dispatch(refresh());
         }
     }, [deleted, enqueueSnackbar, dispatch]);
 
+    useEffect(() => {
+        if (message) {
+            enqueueSnackbar(message, { variant: 'error' });
+            dispatch(clearMessage());
+        }
+    }, [message, dispatch, enqueueSnackbar])
 
-    const handleDeleteClick = (categoryId) => {
+    const handleDeleteClick = () => {
+        setOpen(true);
+    };
+
+    const handleDelete = (categoryId) => {
         dispatch(deleteCategory(categoryId));
-    }
+    };
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
             setOrder(isAsc ? 'desc' : 'asc');
             setOrderBy(property);
-    };
-
-    const handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            const newSelecteds = categories.map((n) => n.name);
-            setSelected(newSelecteds);
-            return;
-        }
-        setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-        }
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -150,6 +155,10 @@ const Category = () => {
 
     const handleFilterByName = (event) => {
         setFilterName(event.target.value);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     if (status === action_status.LOADING) {
@@ -202,41 +211,32 @@ const Category = () => {
                         <Typography variant="h4" >
                             Category
                         </Typography>
-                        <Button variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" />}>
+                        <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>} >
                             New Category
-                        </Button>
+                        </ButtonStyle>
                     </Stack>
             
                     <Card>
-                        <TableListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} title='category'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='category'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
-                                <TableListHead
+                                <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
                                     rowCount={categories.length}
-                                    numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
-                                    onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                 {filteredCategories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                     const { id, name, createdAt, parent } = row;
-                                    const isItemSelected = selected.indexOf(name) !== -1;
                 
                                     return (
                                     <TableRow
                                         hover
                                         key={id}
                                         tabIndex={-1}
-                                        role="checkbox"
-                                        selected={isItemSelected}
-                                        aria-checked={isItemSelected}
                                     >
-                                        <TableCell padding="checkbox">
-                                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                                        </TableCell>
                                         <TableCell align="left" width={350}>{name}</TableCell>
                                         <TableCell align="left">{fDateTimeSuffix(createdAt)}</TableCell>
                                         <TableCell align="left" width={350}>{parent?.name}</TableCell>
@@ -244,6 +244,15 @@ const Category = () => {
                                             <MoreMenu>
                                                 <MoreMenuLinkItem to={`update/${id}`} title="Edit" iconName="eva:edit-fill" />
                                                 <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" handleClick={handleDeleteClick} id={id} />
+                                                <AlertDialog
+                                                    itemId={id}
+                                                    open={open}
+                                                    handleClose={handleClose}
+                                                    title='Delete Category'
+                                                    content='Are you sure to delete this category'
+                                                    handleConfirm={handleDelete}
+                                                    color='error'
+                                                />
                                             </ MoreMenu>
                                         </TableCell>
                                     </TableRow>

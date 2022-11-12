@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 
 import MenuPopover from '../../components/MenuPopover';
 import { logout } from '../../app/slices/authSlice';
+import LetterAvatar from '../../components/LetterAvatar';
 
 const MENU_OPTIONS = [
     {
@@ -63,7 +64,7 @@ const AccountPopover = ({ user }) => {
                 {user?.avatar?.url ? 
                     (<Avatar src={user?.avatar?.url} alt="photoURL" />)
                     :
-                    (<Avatar />)}
+                    (<LetterAvatar name={user?.name} />)}
                 
             </IconButton>
 

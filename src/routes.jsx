@@ -20,6 +20,7 @@ import Payment from './pages/Payment';
 import Job from './pages/Job';
 import UserDetails from './pages/UserDetails';
 import JobDetails from './pages/JobDetails';
+import Transaction from './pages/Transaction';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -51,6 +52,7 @@ const Router = () => {
                 { path: 'points', element: <Point />},
                 { path: 'points/new', element: <CreatePoint />},
                 { path: 'payments', element: <Payment />},
+                { path: 'transactions', element: <Transaction />}
             ]
         },
         {
