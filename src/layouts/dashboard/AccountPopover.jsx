@@ -61,10 +61,10 @@ const AccountPopover = ({ user }) => {
                 }),
                 }}
             >
-                {user?.avatar?.url ? 
-                    (<Avatar src={user?.avatar?.url} alt="photoURL" />)
+                {user?.image ? 
+                    (<Avatar src={user?.image} alt="photoURL" />)
                     :
-                    (<LetterAvatar name={user?.name} />)}
+                    (<LetterAvatar name={user?.email} />)}
                 
             </IconButton>
 
@@ -84,7 +84,7 @@ const AccountPopover = ({ user }) => {
             >
                 <Box sx={{ my: 1.5, px: 2.5 }}>
                 <Typography variant="subtitle2" noWrap>
-                    {user?.name}
+                   Admin
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
                     {user?.email}

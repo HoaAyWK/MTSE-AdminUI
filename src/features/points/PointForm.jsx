@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
 import { FormProvider, RHFTextField } from '../../components/hook-form';
-import { refresh } from '../../app/slices/pointSlice';
+import { refresh } from '../../app/slices/packagesSlice';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
     color: theme.palette.main,

@@ -31,19 +31,19 @@ const LoginForm = () => {
     const [hiddenAlert, setHiddenAlert] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const { message } = useSelector((state) => state.message);
-    const { status } = useSelector((state) => state.auth);
+    const { loginStatus } = useSelector((state) => state.auth);
 
     useEffect(() => {
         dispatch(clearMessage());
     }, [dispatch])
 
     useEffect(() => {
-        if (message && status === action_status.FAILED) {
+        if (message) {
             setHiddenAlert(1);
         } else {
             setHiddenAlert(0);
         }
-    }, [status, message])
+    }, [message])
 
     const LoginSchema = Yup.object().shape({
         email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -104,7 +104,7 @@ const LoginForm = () => {
                 </Link>
             </Stack>
 
-            <LoadingButtonSuccessStyle fullWidth size="large" type="submit" variant="contained" loading={status === action_status.LOADING ? true : false}>
+            <LoadingButtonSuccessStyle fullWidth size="large" type="submit" variant="contained" loading={loginStatus === action_status.LOADING ? true : false}>
                 Login
             </LoadingButtonSuccessStyle>
         </FormProvider>

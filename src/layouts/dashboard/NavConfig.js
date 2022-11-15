@@ -24,9 +24,9 @@ const navConfig = [
         icon: getIcon('ic:round-work'),
     },
     {
-        title: 'point',
-        path: '/dashboard/points',
-        icon: getIcon('akar-icons:credit-card'),
+        title: 'Package',
+        path: '/dashboard/packages',
+        icon: getIcon('ep:present'),
     },
     {
         title: 'payment',
@@ -37,6 +37,11 @@ const navConfig = [
         title: 'transaction',
         path: '/dashboard/transactions',
         icon: getIcon('icon-park-outline:transaction'),
+    },
+    {
+        title: 'skill',
+        path: '/dashboard/skills',
+        icon: getIcon('clarity:node-group-line'),
     }
 ];
 

@@ -29,7 +29,7 @@ import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { selectAllPoints, refresh, getPoints, deletePoint } from '../app/slices/pointSlice';
+import { selectAllPackages, refresh, getPackages, deletePackage } from '../app/slices/packagesSlice';
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.success.dark,
@@ -40,9 +40,10 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Name', alignRight: false },
-    { id: 'points', label: 'Points', alignRight: false },
-    { id: 'price', label: 'Price', alignRight: false},
+    { id: 'description', label: 'Description', alignRight: false },
+    { id: 'price', label: 'Price', alignRight: true},
+    { id: 'canPost', label: 'Can Post', alignRight: true },
+    { id: 'point', label: 'Point', alignRight: true},
     { id: '', label: '', alignRight: false},
 ];
 
@@ -70,17 +71,17 @@ function applySortFilter(array, comparator, query) {
         return a[1] - b[1];
     });
     if (query) {
-        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+        return filter(array, (_user) => _user.description.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
 }
 
-const Point = () => {
+const Package = () => {
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
 
-    const [orderBy, setOrderBy] = useState('name');
+    const [orderBy, setOrderBy] = useState('price');
 
     const [filterName, setFilterName] = useState('');
 
@@ -88,15 +89,15 @@ const Point = () => {
 
     const dispatch = useDispatch();
     
-    const points = useSelector(selectAllPoints);
+    const packages = useSelector(selectAllPackages);
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { status, isDeleted } = useSelector((state) => state.points);
+    const { status, isDeleted } = useSelector((state) => state.packages);
 
     useEffect(() => {
         if (status === action_status.IDLE) {
-            dispatch(getPoints());
+            dispatch(getPackages());
         }
         dispatch(clearMessage());
         dispatch(refresh());
@@ -104,13 +105,13 @@ const Point = () => {
 
     useEffect(() => {
         if (isDeleted) {
-            enqueueSnackbar('Deleted Point', { variant: 'success' });
+            enqueueSnackbar('Deleted Package', { variant: 'success' });
             dispatch(refresh());
         }
     }, [isDeleted, enqueueSnackbar, dispatch])
 
     const handleClickDelete = (id) => {
-        dispatch(deletePoint(id));
+        dispatch(deletePackage(id));
     };
 
     const handleRequestSort = (event, property) => {
@@ -134,7 +135,7 @@ const Point = () => {
 
     if (status === action_status.LOADING) {
         return (
-            <Page title='Point'>
+            <Page title='Package'>
                 <Container maxWidth='xl'>
                     <Box 
                         sx={{
@@ -152,7 +153,7 @@ const Point = () => {
         )
     } else if (status === action_status.FAILED) {
         return (
-            <Page title='Point'>
+            <Page title='Package'>
                 <Container maxWidth='xl'>
                 <Box 
                         sx={{
@@ -169,38 +170,38 @@ const Point = () => {
             </Page>
         )
     } else if (status === action_status.SUCCEEDED) {
-        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - points.length) : 0;
+        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - packages.length) : 0;
 
-        const filteredPoints = applySortFilter(points, getComparator(order, orderBy), filterName);
+        const filteredPackages = applySortFilter(packages, getComparator(order, orderBy), filterName);
 
-        const isPointNotFound = filteredPoints.length === 0;
+        const isPackageNotFound = filteredPackages.length === 0;
 
         return (
-            <Page title="Point">
+            <Page title="Package">
                 <Container maxWidth='xl'>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" >
-                            Points
+                            Packages
                         </Typography>
                         <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>}>
-                           New Point
+                            New Package
                         </ButtonStyle>
                     </Stack>
             
                     <Card>
-                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='point'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='package'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={points.length}
+                                    rowCount={packages.length}
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                {filteredPoints.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, name, points, price } = row;
+                                {filteredPackages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                    const { id, description, point, price, canPost } = row;
                 
                                     return (
                                     <TableRow
@@ -208,9 +209,10 @@ const Point = () => {
                                         key={id}
                                         tabIndex={-1}
                                     >
-                                        <TableCell align="left" width={400}>{name}</TableCell>
-                                        <TableCell align="left" widht={400}>{points}</TableCell>
-                                        <TableCell align="left">{`$${price}`}</TableCell>
+                                        <TableCell align="left" width={500}>{description}</TableCell>
+                                        <TableCell align="right" width={150}>{`$${price}`}</TableCell>
+                                        <TableCell align="right" widht={120}>{canPost}</TableCell>
+                                        <TableCell align="right" width={120}>{point}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
                                                 <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" handleClick={handleClickDelete} id={id} />
@@ -226,7 +228,7 @@ const Point = () => {
                                 )}
                                 </TableBody>
                 
-                                {isPointNotFound && (
+                                {isPackageNotFound && (
                                 <TableBody>
                                     <TableRow>
                                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -240,7 +242,7 @@ const Point = () => {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={points.length}
+                            count={packages.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -253,4 +255,4 @@ const Point = () => {
     }
 }
 
-export default Point;
+export default Package;

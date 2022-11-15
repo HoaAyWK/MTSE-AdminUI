@@ -12,6 +12,10 @@ export const MESSAGE_VARIANT = {
     ERROR: 'error'
 };
 
+export const MESSAGE_ERRORS = {
+    UNAUTHORIZE: "You don't have permission to acess this resource"
+};
+
 export const ROLES = {
-    ADMIN: 'admin'
+    ADMIN: 'Admin'
 };

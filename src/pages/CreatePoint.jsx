@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack';
 import BreadcrumbsRouter from '../components/BreadcrumbRouter';
 import Page from '../components/Page';
 import { clearMessage } from '../app/slices/messageSlice';
-import { createPoint } from '../app/slices/pointSlice';
+import { createPackages } from '../app/slices/packagesSlice';
 import PointForm from '../features/points/PointForm';
 
 const breadcrumbNameMap = {
@@ -41,7 +41,7 @@ const CreatePoint = () => {
                 </Typography>
                 <BreadcrumbsRouter exclude={'dashboard'} breadcrumbNameMap={breadcrumbNameMap}/>
             </Stack>
-            <PointForm pointAction={createPoint} />
+            <PointForm pointAction={createPackages} />
         </Container>
     </Page>
     );

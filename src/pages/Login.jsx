@@ -2,14 +2,17 @@ import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Card, Link, Container, Typography  } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 import useResponsive from '../hooks/useResponsive';
 import Page from '../components/Page';
 import Logo from '../components/Logo';
 import { LoginForm } from '../features/auth/login';
-import { action_status } from '../app/constants';
+import { action_status, MESSAGE_ERRORS, ROLES } from '../app/constants';
+import { getCurrentUser, refresh } from '../app/slices/authSlice';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { setMessage } from '../app/slices/messageSlice';
 
 const RootStyle = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -56,17 +59,38 @@ const ContentStyle = styled('div')(({ theme }) => ({
 const Login = () => {
     const navigate = useNavigate();
     
-    const { status } = useSelector((state) => state.auth);
+    const { loginStatus, getUserStatus, user } = useSelector((state) => state.auth);
+
+    const [token,] = useLocalStorage('token', null);
     
     const smUp = useResponsive('up', 'sm');
 
     const mdUp = useResponsive('up', 'md');
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        if (status === action_status.SUCCEEDED) {
-            navigate('/dashboard/app', { replace: true });
+        if (token) {
+            dispatch(getCurrentUser());
         }
-    }, [status, navigate])
+    }, [token, dispatch]);
+
+    useEffect(() => {
+        if (loginStatus === action_status.SUCCEEDED) {
+            dispatch(getCurrentUser());
+        }
+    }, [loginStatus, dispatch]);
+
+    useEffect(() => {
+        if (user) {
+            if (user.role !== ROLES.ADMIN) {
+                dispatch(setMessage({ message: MESSAGE_ERRORS.UNAUTHORIZE, variant: 'error' }));
+                dispatch(refresh());
+            } else {
+                navigate('/dashboard/app');
+            }
+        }
+    }, [user, dispatch, navigate]);
 
     return (
         <Page title="Login">

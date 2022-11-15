@@ -10,7 +10,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
 import { FormProvider, RHFTextField, RHFSelect } from '../../components/hook-form';
-import { getCategories, refresh, selectRootCategories } from '../../app/slices/categorySlice';
+import { getCategories, refresh } from '../../app/slices/categorySlice';
 import { action_status, MESSAGE_VARIANT } from '../../app/constants';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
@@ -42,16 +42,13 @@ const CategoryForm = (props) => {
     const { categoryAction, category } = props;
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const categories = useSelector(selectRootCategories);
-    const { status, updated, added } = useSelector((state) => state.categories);
+    const { status, isUpdated, isAdded } = useSelector((state) => state.categories);
     const { enqueueSnackbar } = useSnackbar();
 
 
     const CategorySchema = Yup.object().shape({
         id: Yup.string(),
         name: Yup.string().required('Name is required'),
-        description: Yup.string(),
-        parent: Yup.string()
     });
 
     const defaultValues = {
@@ -90,12 +87,12 @@ const CategoryForm = (props) => {
     }, [dispatch])
 
     useEffect(() => {
-        if (added) {
+        if (isAdded) {
             enqueueSnackbar('Created successfully', { variant: 'success' });
             navigate('/dashboard/categories');
         }
 
-        if (updated) {
+        if (isUpdated) {
             enqueueSnackbar('Updated successfully', { variant: 'success' });
             navigate('/dashboard/categories');
         }
@@ -104,7 +101,7 @@ const CategoryForm = (props) => {
             dispatch(getCategories());
         }
 
-    }, [dispatch, navigate, enqueueSnackbar, status, updated, added]);
+    }, [dispatch, navigate, enqueueSnackbar, status, isUpdated, isAdded]);
 
     if (status === action_status.LOADING) {
         return (
@@ -121,8 +118,6 @@ const CategoryForm = (props) => {
                         <PaperStyle>
                             <Stack spacing={3}>
                                 <RHFTextField name="name" label="Category Name *" />
-                                <RHFTextField name="description" label="Description" multiline minRows={5} />
-                                <RHFSelect name="parent" label="Parent Category" data={categories} id='select-parent-category' />
                                 <Box
                                     sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}
                                 >

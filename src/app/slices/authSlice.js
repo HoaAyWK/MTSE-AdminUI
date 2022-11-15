@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { BASE_API_URL, action_status, ROLES, MESSAGE_VARIANT } from '../constants';
+import { BASE_API_URL, action_status, ROLES, MESSAGE_VARIANT, MESSAGE_ERRORS } from '../constants';
 import { setMessage } from './messageSlice';
+import api from '../api';
 
 const initialState = {
     user: null,
-    status: action_status.IDLE,
+    loginStatus: action_status.IDLE,
+    getUserStatus: action_status.IDLE,
     error: null,
-    isAuthenticated: false,
     updated: false,
     updateStatus: action_status.IDLE,
     changedPassword: false,
@@ -19,15 +20,9 @@ export const login = createAsyncThunk(
     'auth/login',
     async ({ email, password }, thunkApi) => {
         try {
-            const response = await axios.post(`${BASE_API_URL}/login`, { email, password }, { withCredentials: true });
-            const { user } = response.data;
-
-            if (!user.roles.includes(ROLES.ADMIN)) {
-                throw new Error('You do not have permission to access this page');
-            }
-
-            console.log(response.data);
-            return response.data.user;
+            const { data } = await api.post('/account/login', { email, password });
+            
+            return data.accessToken;
         } catch (error) {
             const message = (error.response && error.response.data && error.response.data.message) 
                 || error.message || error.toString();
@@ -41,9 +36,17 @@ export const login = createAsyncThunk(
 
 export const getCurrentUser = createAsyncThunk(
     'auth/getCurrentUser',
-    async () => {
-        const { data } = await axios.get(`${BASE_API_URL}/profile`, { withCredentials: true });
-        return data;
+    async (_, thunkApi) => {
+        try {
+            const { data } = await api.get(`/users/profile`);
+
+            return data;
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) 
+                || error.message || error.toString();
+            
+            thunkApi.dispatch(setMessage({ message, variant: MESSAGE_VARIANT.ERROR }));
+        }
     }
 );
 
@@ -105,46 +108,47 @@ const authSlice = createSlice({
             state.changedPasswordStatus = action_status.IDLE;
         },
         logout: (state, action) => {
-            state.user = null;
-            state.isAuthenticated = false;
             state.changedPasswordStatus = action_status.IDLE;
             state.updateStatus = action_status.IDLE;
             state.error = null;
-            state.status = action_status.IDLE;
+            state.loginStatus = action_status.IDLE;
+            state.getUserStatus = action_status.IDLE;
             state.changedPassword = false;
             state.updated = false;
-            localStorage.setItem('user', null);
+            state.user = null;
+            localStorage.setItem('token', null);
         }
     },
     extraReducers: (builder) => {
         builder
             .addCase(login.pending, (state, action) => {
-                state.status = action_status.LOADING;
+                state.loginStatus = action_status.LOADING;
             })
             .addCase(login.fulfilled, (state, action) => {
-                state.status = action_status.SUCCEEDED;
-                state.user = action.payload;
-                localStorage.setItem('user', JSON.stringify(action.payload));
-                state.isAuthenticated = true;
+                state.loginStatus = action_status.SUCCEEDED;
+                localStorage.setItem('token', JSON.stringify(action.payload));
             })
             .addCase(login.rejected, (state, action) => {
-                state.status = action_status.FAILED;
-                state.error = action;
+                state.loginStatus = action_status.FAILED;
+            })
+            .addCase(getCurrentUser.pending, (state, action) => {
+                state.getUserStatus = action_status.LOADING;      
             })
             .addCase(getCurrentUser.fulfilled, (state, action) => {
+                state.loginStatus = false;
+                state.getUserStatus = action_status.SUCCEEDED;
                 state.user = action.payload.user;
-                state.isAuthenticated = true;
-                localStorage.setItem('user', JSON.stringify(action.payload.user));
+            })
+            .addCase(getCurrentUser.rejected, (state, action) => {
+                state.getUserStatus = action_status.FAILED;
             })
             .addCase(updateAccount.pending, (state, action) => {
                 state.updated = false;  
                 state.updateStatus = action_status.LOADING;
             })
             .addCase(updateAccount.fulfilled, (state, action) => {
-                state.user = action.payload.user;
                 state.updated = true;  
                 state.updateStatus = action_status.SUCCEEDED;
-                localStorage.setItem('user', JSON.stringify(action.payload.user));
             })
             .addCase(updateAccount.rejected, (state, action) => {
                 state.updateStatus = action_status.FAILED;
@@ -156,10 +160,9 @@ const authSlice = createSlice({
             .addCase(changePassword.fulfilled, (state, action) => {
                 state.changedPassword = true;
                 state.user = null;
-                state.isAuthenticated = false;
                 state.status = action_status.IDLE;
                 state.changedPasswordStatus = action_status.SUCCEEDED;
-                localStorage.setItem('user', null);
+                localStorage.setItem('token', null);
             })
             .addCase(changePassword.rejected, (state, action) => {
                 state.changedPasswordStatus = action_status.FAILED;
@@ -168,5 +171,5 @@ const authSlice = createSlice({
 });
 
 const { actions, reducer } = authSlice;
-export const { refresh, logout } = actions;
+export const { refresh, logout  } = actions;
 export default reducer;

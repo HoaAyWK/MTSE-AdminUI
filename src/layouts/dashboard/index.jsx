@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
+import { Box, CircularProgress } from '@mui/material';
 
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-import { getCurrentUser } from '../../app/slices/authSlice';
-import useLocalStorage from '../../hooks/useLocalStorage.js';
+import { getCurrentUser, refresh } from '../../app/slices/authSlice';
+import { action_status, MESSAGE_ERRORS, ROLES } from '../../app/constants';
+import { useSnackbar } from 'notistack';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 // ----------------------------------------------------------------------
 
@@ -36,29 +39,44 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
     const [open, setOpen] = useState(false);
-    const [user, setUser] = useLocalStorage('user', null);
-    const { user: currentUser } = useSelector((state) => state.auth);
+    const { user: currentUser, getUserStatus } = useSelector((state) => state.auth);
+    const [token,] = useLocalStorage('token', null);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
-        if (!user) {
-            dispatch(getCurrentUser());
+        if (!token) {
+            dispatch(refresh());
+            navigate('/login');
         }
-    }, [user])
+    }, [token, dispatch, navigate]);
 
     useEffect(() => {
         if (!currentUser) {
             dispatch(getCurrentUser());
+        } else {
+            if (currentUser.role !== ROLES.ADMIN) {
+                enqueueSnackbar(MESSAGE_ERRORS.UNAUTHORIZE, { variant: 'error' });
+                navigate('/login');
+            }
         }
-    }, [currentUser])
+    }, [currentUser, navigate, dispatch, enqueueSnackbar]);
 
     return (
-        <RootStyle>
-            <DashboardNavbar user={currentUser} onOpenSidebar={() => setOpen(true)} />
-            <DashboardSidebar user={currentUser} isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
-            <MainStyle>
-                <Outlet />
-            </MainStyle>
-        </RootStyle>
+        getUserStatus === action_status.LOADING ? (
+            <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </Box>
+        )
+        : (
+            <RootStyle>
+                <DashboardNavbar user={currentUser} onOpenSidebar={() => setOpen(true)} />
+                <DashboardSidebar user={currentUser} isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+                <MainStyle>
+                    <Outlet />
+                </MainStyle>
+            </RootStyle>
+        )
     );
 }

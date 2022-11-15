@@ -13,7 +13,7 @@ import useLocalStorage from './hooks/useLocalStorage';
 import User from './pages/User';
 import Profile from './pages/Profile';
 import AccountSettings from './pages/AccountSettings';
-import Point from './pages/Point';
+import Package from './pages/Package';
 import CreatePoint from './pages/CreatePoint';
 import NotFound from './pages/Page404';
 import Payment from './pages/Payment';
@@ -21,38 +21,32 @@ import Job from './pages/Job';
 import UserDetails from './pages/UserDetails';
 import JobDetails from './pages/JobDetails';
 import Transaction from './pages/Transaction';
-
-
-const ProtectedRoute = ({ children }) => {
-    const [user, setUser] = useLocalStorage('user', null);
-
-    return (user ? <>{children}</> : <Navigate to='/login' />);
-};
+import Skill from './pages/Skill';
 
 const Router = () => {
     return useRoutes([
         {
             path: '/dashboard',
             element: 
-                (<ProtectedRoute>
-                    <DashboardLayout />
-                </ ProtectedRoute>)
+                <DashboardLayout />
             ,
             children: [
                 { path: 'app', element: <DashboardApp /> },
-                { path: 'users', element: <User />},
-                { path: 'users/profile', element: <Profile />},
-                { path: 'users/account', element: <AccountSettings />},
-                { path: 'users/:userId', element: <UserDetails />},
+                // { path: 'users', element: <User />},
+                // { path: 'users/profile', element: <Profile />},
+                // { path: 'users/account', element: <AccountSettings />},
+                // { path: 'users/:userId', element: <UserDetails />},
                 { path: 'categories', element: <Category />},
                 { path: 'categories/new', element: <CreateCategory />},
                 { path: 'categories/update/:categoryId', element: <UpdateCategory />},
-                { path: 'jobs', element: <Job />},
-                { path: 'jobs/:jobId', element: <JobDetails />},
-                { path: 'points', element: <Point />},
-                { path: 'points/new', element: <CreatePoint />},
-                { path: 'payments', element: <Payment />},
-                { path: 'transactions', element: <Transaction />}
+                // { path: 'jobs', element: <Job />},
+                // { path: 'jobs/:jobId', element: <JobDetails />},
+                { path: 'packages', element: <Package />},
+                // { path: 'points/new', element: <CreatePoint />},
+                // { path: 'payments', element: <Payment />},
+                // { path: 'transactions', element: <Transaction />},
+                { path: 'skills', element: <Skill />},
+
             ]
         },
         {

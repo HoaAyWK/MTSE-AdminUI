@@ -24,7 +24,7 @@ import { useSnackbar } from 'notistack';
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { deleteCategory, getCategories, refresh, selectAllCategories } from '../app/slices/categorySlice';
+import { deleteSkill, getSkills, refresh, selectAllSkills } from '../app/slices/skillSlice';
 import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { fDateTimeSuffix } from '../utils/formatTime';
@@ -77,7 +77,7 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-const Category = () => {
+const Skill = () => {
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
@@ -92,19 +92,19 @@ const Category = () => {
 
     const dispatch = useDispatch();
 
-    const categories = useSelector(selectAllCategories);
+    const skills = useSelector(selectAllSkills);
 
-    const { isDeleted, isUpdated } = useSelector((state) => state.categories);
+    const { isDeleted, isUpdated } = useSelector((state) => state.skills);
 
     const { message } = useSelector((state) => state.message);
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { status } = useSelector((state) => state.categories);
+    const { status } = useSelector((state) => state.skills);
 
     useEffect(() => {
         if (status === action_status.IDLE) {
-            dispatch(getCategories());
+            dispatch(getSkills());
         }
         dispatch(clearMessage());
         dispatch(refresh());
@@ -112,9 +112,9 @@ const Category = () => {
 
     useEffect(() => {
         if (isUpdated) {
-            dispatch(getCategories());
+            dispatch(getSkills());
         }
-    }, [isUpdated, dispatch])
+    }, [isUpdated])
 
     useEffect(() => {
         if (isDeleted) {
@@ -134,8 +134,8 @@ const Category = () => {
         setOpen(true);
     };
 
-    const handleDelete = (categoryId) => {
-        dispatch(deleteCategory(categoryId));
+    const handleDelete = (SkillId) => {
+        dispatch(deleteSkill(SkillId));
     };
 
     const handleRequestSort = (event, property) => {
@@ -163,7 +163,7 @@ const Category = () => {
 
     if (status === action_status.LOADING) {
         return (
-            <Page title='Category'>
+            <Page title='Skill'>
                 <Container maxWidth='xl'>
                     <Box 
                         sx={{
@@ -181,7 +181,7 @@ const Category = () => {
         )
     } else if (status === action_status.FAILED) {
         return (
-            <Page title='Category'>
+            <Page title='Skill'>
                 <Container maxWidth='xl'>
                     <Box 
                         sx={{
@@ -198,37 +198,37 @@ const Category = () => {
             </Page>
         )
     } else if (status === action_status.SUCCEEDED) {
-        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - categories.length) : 0;
+        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - skills.length) : 0;
 
-        const filteredCategories = applySortFilter(categories, getComparator(order, orderBy), filterName);
+        const filteredSkills = applySortFilter(skills, getComparator(order, orderBy), filterName);
 
-        const isCategoryNotFound = filteredCategories.length === 0;
+        const isSkillNotFound = filteredSkills.length === 0;
 
         return (
-            <Page title="Category">
+            <Page title="Skill">
                 <Container maxWidth='xl'>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" >
-                            Category
+                            Skill
                         </Typography>
                         <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>} >
-                            New Category
+                            New Skill
                         </ButtonStyle>
                     </Stack>
             
                     <Card>
-                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='category'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='skill'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={categories.length}
+                                    rowCount={skills.length}
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                {filteredCategories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                {filteredSkills.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                     const { id, name, createdAt, updatedAt } = row;
                 
                                     return (
@@ -248,8 +248,8 @@ const Category = () => {
                                                     itemId={id}
                                                     open={open}
                                                     handleClose={handleClose}
-                                                    title='Delete Category'
-                                                    content='Are you sure to delete this category'
+                                                    title='Delete Skill'
+                                                    content='Are you sure to delete this skill'
                                                     handleConfirm={handleDelete}
                                                     color='error'
                                                 />
@@ -265,7 +265,7 @@ const Category = () => {
                                 )}
                                 </TableBody>
                 
-                                {isCategoryNotFound && (
+                                {isSkillNotFound && (
                                 <TableBody>
                                     <TableRow>
                                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -279,7 +279,7 @@ const Category = () => {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={categories.length}
+                            count={skills.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -292,4 +292,4 @@ const Category = () => {
     }
 };
 
-export default Category;
+export default Skill;

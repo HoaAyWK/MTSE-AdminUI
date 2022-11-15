@@ -4,13 +4,14 @@ import jobReducer from './slices/jobSlice';
 import messageReducer from './slices/messageSlice';
 import categoryReducer from './slices/categorySlice';
 import userReducer from './slices/userSlice';
-import pointReducer from './slices/pointSlice';
+import packagesReducer from './slices/packagesSlice';
 import paymentReducer from './slices/paymentSlice';
 import statisticReducer from './slices/statisticSlice';
 import feedbackReducer from './slices/feedbackSlice';
 import commentReducer from './slices/commentSlice';
 import offerReducer from './slices/offerSlice';
 import transactionReducer from './slices/transactionSlice';
+import skillReducer from './slices/skillSlice';
 
 export const store = configureStore({
     reducer: {
@@ -19,12 +20,13 @@ export const store = configureStore({
       message: messageReducer,
       categories: categoryReducer,
       users: userReducer,
-      points: pointReducer,
+      packages: packagesReducer,
       payments: paymentReducer,
       statistic: statisticReducer,
       feedbacks: feedbackReducer,
       comments: commentReducer,
       offers: offerReducer,
-      transactions: transactionReducer
+      transactions: transactionReducer,
+      skills: skillReducer
     },
 });

@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 
-import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../constants';
+import { action_status, MESSAGE_VARIANT } from '../constants';
 import { setMessage } from './messageSlice';
 import api from '../api';
 
-const categoriesAdapter = createEntityAdapter();
+const skillsAdapter = createEntityAdapter();
 
-const initialState = categoriesAdapter.getInitialState({
+const initialState = skillsAdapter.getInitialState({
     status: action_status.IDLE,
     error: null,
     isUpdated: false,
@@ -14,19 +14,19 @@ const initialState = categoriesAdapter.getInitialState({
     isDeleted: false
 });
 
-export const getCategories = createAsyncThunk(
-    'categories/getCategories',
+export const getSkills = createAsyncThunk(
+    'skills/getSkills',
     async () =>  {
-        const { data } = await api.get('/categories');
+        const { data } = await api.get('/skills');
         return data;
     }
 );
 
-export const createCategory = createAsyncThunk(
-    'categories/create',
-    async (category, thunkApi) => {
+export const createSkill = createAsyncThunk(
+    'skills/create',
+    async (skill, thunkApi) => {
         try {
-            const { data } = await api.post('/categories/admin/create', category);
+            const { data } = await api.post('/skills/admin/create', skill);
 
             return data;
         } catch (error) {
@@ -40,11 +40,11 @@ export const createCategory = createAsyncThunk(
     }
 );
 
-export const updateCategory = createAsyncThunk(
-    'categories/update',
-    async (category, thunkApi) => {
+export const updateSkill = createAsyncThunk(
+    'skills/update',
+    async (skill, thunkApi) => {
         try {
-            const { data } = await api.put(`/categories/admin/${category.id}`, category);
+            const { data } = await api.put(`/skills/admin/${skill.id}`, skill);
 
             return data;
         } catch (error) {
@@ -58,13 +58,13 @@ export const updateCategory = createAsyncThunk(
     }
 );
 
-export const deleteCategory = createAsyncThunk(
-    'categories/delete',
-    async (categoryId, thunkApi) => {
+export const deleteSkill = createAsyncThunk(
+    'skills/delete',
+    async (skillId, thunkApi) => {
         try {
-            const { data } = await api.delete(`/categories/admin/${categoryId}`);
+            const { data } = await api.delete(`/skills/admin/${skillId}`);
 
-            data.categoryId = categoryId;
+            data.skillId = skillId;
             return data;
         } catch (error) {
             const message = (error.response && error.response.data && error.response.data.message) 
@@ -77,8 +77,8 @@ export const deleteCategory = createAsyncThunk(
     }
 )
 
-const categorySlice = createSlice({
-    name: 'categories',
+const skillSlice = createSlice({
+    name: 'skills',
     initialState,
     reducers: {
         refresh: (state, action) => {
@@ -89,47 +89,47 @@ const categorySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getCategories.pending, (state, action) => {
+            .addCase(getSkills.pending, (state, action) => {
                 state.status = action_status.LOADING;
             })
-            .addCase(getCategories.fulfilled, (state, action) => {
-                categoriesAdapter.setAll(state, action.payload.categories);
+            .addCase(getSkills.fulfilled, (state, action) => {
+                skillsAdapter.setAll(state, action.payload.skills);
                 state.status = action_status.SUCCEEDED;
             })
-            .addCase(getCategories.rejected, (state, action) => {
+            .addCase(getSkills.rejected, (state, action) => {
                 state.status = action_status.FAILED;
                 state.error = action.error;
             })
-            .addCase(createCategory.fulfilled, (state, action) => {
-                categoriesAdapter.addOne(state, action.payload.category);
+            .addCase(createSkill.fulfilled, (state, action) => {
+                skillsAdapter.addOne(state, action.payload.skill);
                 state.isAdded = true;
             })
-            .addCase(createCategory.rejected, (state, action) => {
+            .addCase(createSkill.rejected, (state, action) => {
                 state.error = action.error;
             })
-            .addCase(updateCategory.fulfilled, (state, action) => {
+            .addCase(updateSkill.fulfilled, (state, action) => {
                 state.isUpdated = true;
             })
-            .addCase(updateCategory.rejected, (state, action) => {
+            .addCase(updateSkill.rejected, (state, action) => {
                 state.error = action.error;
             })
-            .addCase(deleteCategory.pending, (state, action) => {
+            .addCase(deleteSkill.pending, (state, action) => {
                 state.isDeleted = false;
             })
-            .addCase(deleteCategory.fulfilled, (state, action) => {
+            .addCase(deleteSkill.fulfilled, (state, action) => {
                 state.isDeleted = true;
-                categoriesAdapter.removeOne(state, action.payload.categoryId);
+                skillsAdapter.removeOne(state, action.payload.skillId);
             })
     }
 });
 
 export const {
-    selectAll: selectAllCategories,
-    selectById: selectCategoryById,
-    selectIds: selectCategoryIds
-} = categoriesAdapter.getSelectors((state) => state.categories);
+    selectAll: selectAllSkills,
+    selectById: selectSkillById,
+    selectIds: selectSkillIds
+} = skillsAdapter.getSelectors((state) => state.skills);
 
-const { reducer, actions } = categorySlice;
+const { reducer, actions } = skillSlice;
 export const { refresh } = actions;
 
 export default reducer;

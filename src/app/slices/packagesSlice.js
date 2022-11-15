@@ -1,11 +1,12 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
-import { action_status, BASE_API_URL, MESSAGE_VARIANT } from "../constants";
+import { action_status, MESSAGE_VARIANT } from "../constants";
 import { setMessage } from "./messageSlice";
+import api from '../api';
 
-const pointsAdapter = createEntityAdapter();
+const packagesAdapter = createEntityAdapter();
 
-const initialState = pointsAdapter.getInitialState({
+const initialState = packagesAdapter.getInitialState({
     error: null,
     status: action_status.IDLE,
     isAdded: false,
@@ -13,24 +14,20 @@ const initialState = pointsAdapter.getInitialState({
     isDeleted: false
 });
 
-export const getPoints = createAsyncThunk(
-    'points/getPoints',
+export const getPackages = createAsyncThunk(
+    'packages/getPackages',
     async () => {
-        const { data } = await axios.get(`${BASE_API_URL}/credits`);
+        const { data } = await api.get(`/packages`);
 
         return data;
     }
 );
 
-export const createPoint = createAsyncThunk(
-    'points/create',
-    async (point, thunkApi) => {
+export const createPackages = createAsyncThunk(
+    'packages/create',
+    async (pkg, thunkApi) => {
         try {
-            const { data } = await axios.post(
-                `${BASE_API_URL}/admin/credits/create`,
-                point,
-                { withCredentials: true }
-            );
+            const { data } = await api.post(`/packages/admin/create`, pkg);
 
             return data;
         } catch (error) {
@@ -44,15 +41,11 @@ export const createPoint = createAsyncThunk(
     }
 );
 
-export const updatePoint = createAsyncThunk(
-    'points/update',
-    async (point, thunkApi) => {
+export const updatePackage = createAsyncThunk(
+    'packages/update',
+    async (pkg, thunkApi) => {
         try {
-            const { data } = await axios.put(
-                `${BASE_API_URL}/admin/points/${point.id}`,
-                point,
-                { withCredentials: true }
-            );
+            const { data } = await api.put(`$/packages/admin/${pkg.id}`, pkg);
 
             return data;
         } catch (error) {
@@ -66,14 +59,11 @@ export const updatePoint = createAsyncThunk(
     }
 );
 
-export const deletePoint = createAsyncThunk(
-    'points/delete',
+export const deletePackage = createAsyncThunk(
+    'packages/delete',
     async (id, thunkApi) => {
         try {
-            const { data } = await axios.delete(
-                `${BASE_API_URL}/admin/credits/${id}`,
-                { withCredentials: true }
-            );
+            const { data } = await axios.delete(`$/packages/admin/${id}`);
 
             data.id = id;
 
@@ -89,8 +79,8 @@ export const deletePoint = createAsyncThunk(
     }
 )
 
-const pointSlice = createSlice({
-    name: 'points',
+const packagesSlice = createSlice({
+    name: 'packages',
     initialState,
     reducers: {
         refresh: (state, action) => {
@@ -101,40 +91,40 @@ const pointSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(getPoints.pending, (state, action) => {
+            .addCase(getPackages.pending, (state, action) => {
                 state.status = action_status.LOADING;
             })
-            .addCase(getPoints.fulfilled, (state, action) => {
+            .addCase(getPackages.fulfilled, (state, action) => {
                 state.status = action_status.SUCCEEDED;
-                pointsAdapter.setAll(state, action.payload.credits)
+                packagesAdapter.setAll(state, action.payload.packages)
             })
-            .addCase(getPoints.rejected, (state, action) => {
+            .addCase(getPackages.rejected, (state, action) => {
                 state.status = action_status.FAILED;
                 state.error = action.error;
             })
-            .addCase(createPoint.pending, (state, action) => {
+            .addCase(createPackages.pending, (state, action) => {
                 state.isAdded = false;
             })
-            .addCase(createPoint.fulfilled, (state, action) => {
-                pointsAdapter.addOne(state, action.payload.credit);
+            .addCase(createPackages.fulfilled, (state, action) => {
+                packagesAdapter.addOne(state, action.payload.package);
                 state.isAdded = true;
             })
-            .addCase(deletePoint.pending, (state, action) => {
+            .addCase(deletePackage.pending, (state, action) => {
                 state.isDeleted = false;
             })
-            .addCase(deletePoint.fulfilled, (state, action) => {
+            .addCase(deletePackage.fulfilled, (state, action) => {
                 state.isDeleted = true;
-                pointsAdapter.removeOne(state, action.payload.id);
+                packagesAdapter.removeOne(state, action.payload.id);
             })
     }
 });
 
 export const {
-    selectAll: selectAllPoints,
-    selectById: selectPointById,
-    selectIds: selectPointIds
-} = pointsAdapter.getSelectors((state) => state.points);
+    selectAll: selectAllPackages,
+    selectById: selectPackageById,
+    selectIds: selectPackageIds
+} = packagesAdapter.getSelectors((state) => state.packages);
 
-const { reducer, actions } = pointSlice;
+const { reducer, actions } = packagesSlice;
 export const { refresh } = actions;
 export default reducer;

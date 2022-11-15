@@ -51,17 +51,17 @@ const DashboardSidebar = ({ isOpenSidebar, onCloseSidebar, user }) => {
             <Box sx={{ mb: 5, mx: 2.5 }}>
                 <Link underline="none" component={RouterLink} to="/dashboard/users/profile">
                     <AccountStyle>
-                        { user?.avatar?.url ? (
-                                <Avatar src={`${user?.avatar.url}`} alt={`${user?.name}`} />
+                        { user?.image ? (
+                                <Avatar src={`${user?.image}`} alt={`${user?.email}`} />
                             )
                         :
-                            (<LetterAvatar name={user?.name} />)}
+                            (<LetterAvatar name={user?.email} />)}
                         <Box sx={{ ml: 2 }}>
                             <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                                {user?.name}
+                                Admin
                             </Typography>
                             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                {user?.roles.join(' ')}
+                                {user?.role}
                             </Typography>
                         </Box>
                     </AccountStyle>
