@@ -1,14 +1,17 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
-import { action_status, BASE_API_URL, MESSAGE_VARIANT } from '../constants';
-import { setMessage } from './messageSlice';
 import api from '../api';
+import { action_status, MESSAGE_VARIANT } from '../constants';
+import { setMessage } from './messageSlice';
+import { uploadTaskPromise } from '../../utils/uploadTaskPromise';
 
 const categoriesAdapter = createEntityAdapter();
 
 const initialState = categoriesAdapter.getInitialState({
     status: action_status.IDLE,
     error: null,
+    addOrUpdateStatus: action_status.IDLE,
     isUpdated: false,
     isAdded: false,
     isDeleted: false
@@ -26,7 +29,10 @@ export const createCategory = createAsyncThunk(
     'categories/create',
     async (category, thunkApi) => {
         try {
-            const { data } = await api.post('/categories/admin/create', category);
+            const { name, image } = category;
+            const filePath = `files/categories/${uuidv4()}`;
+            const imageUrl = await uploadTaskPromise(filePath, image);
+            const { data } = await api.post('/categories/admin/create', { name, image: imageUrl });
 
             return data;
         } catch (error) {
@@ -44,7 +50,13 @@ export const updateCategory = createAsyncThunk(
     'categories/update',
     async (category, thunkApi) => {
         try {
-            const { data } = await api.put(`/categories/admin/${category.id}`, category);
+            const { id, image, ...updateData } = category;
+            if (image) {
+                const filePath = `files/categories/${uuidv4()}`;
+                updateData.image = await uploadTaskPromise(filePath, image);
+            }
+
+            const { data } = await api.put(`/categories/admin/${id}`, updateData);
 
             return data;
         } catch (error) {
@@ -85,6 +97,7 @@ const categorySlice = createSlice({
             state.isUpdated = false;
             state.isAdded = false;
             state.isDeleted = false;
+            state.addOrUpdateStatus = action_status.IDLE;
         }
     },
     extraReducers: (builder) => {
@@ -100,18 +113,28 @@ const categorySlice = createSlice({
                 state.status = action_status.FAILED;
                 state.error = action.error;
             })
+            .addCase(createCategory.pending, (state, action) => {
+                state.addOrUpdateStatus = action_status.LOADING;
+            })
             .addCase(createCategory.fulfilled, (state, action) => {
                 categoriesAdapter.addOne(state, action.payload.category);
+                state.addOrUpdateStatus = action_status.SUCCEEDED;
                 state.isAdded = true;
             })
             .addCase(createCategory.rejected, (state, action) => {
                 state.error = action.error;
+                state.addOrUpdateStatus = action_status.FAILED;
+            })
+            .addCase(updateCategory.pending, (state, action) => {
+                state.addOrUpdateStatus = action_status.LOADING;
             })
             .addCase(updateCategory.fulfilled, (state, action) => {
                 state.isUpdated = true;
+                state.addOrUpdateStatus = action_status.SUCCEEDED;
             })
             .addCase(updateCategory.rejected, (state, action) => {
                 state.error = action.error;
+                state.addOrUpdateStatus = action_status.FAILED;
             })
             .addCase(deleteCategory.pending, (state, action) => {
                 state.isDeleted = false;

@@ -9,9 +9,19 @@ const navConfig = [
         icon: getIcon('eva:pie-chart-2-fill'),
     },
     {
-        title: 'user',
-        path: '/dashboard/users',
-        icon: getIcon('eva:people-fill'),
+        title: 'job',
+        path: '/dashboard/jobs',
+        icon: getIcon('ic:round-work'),
+    },
+    {
+        title: 'freelancer',
+        path: '/dashboard/freelancers',
+        icon: getIcon('clarity:employee-group-solid'),
+    },
+    {
+        title: 'employer',
+        path: '/dashboard/employers',
+        icon: getIcon('ic:round-people'),
     },
     {
         title: 'category',
@@ -19,30 +29,20 @@ const navConfig = [
         icon: getIcon('ic:outline-category'),
     },
     {
-        title: 'job',
-        path: '/dashboard/jobs',
-        icon: getIcon('ic:round-work'),
+        title: 'skill',
+        path: '/dashboard/skills',
+        icon: getIcon('clarity:node-group-line'),
     },
     {
         title: 'Package',
         path: '/dashboard/packages',
-        icon: getIcon('ep:present'),
-    },
-    {
-        title: 'payment',
-        path: '/dashboard/payments',
-        icon: getIcon('fa6-solid:file-invoice-dollar'),
+        icon: getIcon('mdi:package-outline'),
     },
     {
         title: 'transaction',
         path: '/dashboard/transactions',
         icon: getIcon('icon-park-outline:transaction'),
     },
-    {
-        title: 'skill',
-        path: '/dashboard/skills',
-        icon: getIcon('clarity:node-group-line'),
-    }
 ];
 
 export default navConfig;

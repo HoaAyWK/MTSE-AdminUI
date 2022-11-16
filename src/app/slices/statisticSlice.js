@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 
-import { action_status, BASE_API_URL } from "../constants";
+import api from '../api';
+import { action_status } from "../constants";
 
 const initialState = {
     statistic: [],
@@ -13,7 +13,7 @@ const initialState = {
 export const getStatistic = createAsyncThunk(
     'statistic/getStatistic',
     async () => {
-        const { data } = await axios.get(`${BASE_API_URL}/pointhistories/statistic`);
+        const { data } = await api.get(`/transactions/stats`);
         
         return data;
     }

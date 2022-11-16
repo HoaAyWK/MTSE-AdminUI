@@ -63,7 +63,9 @@ const ChangePasswordFrom = (props) => {
     const UserSchema = Yup.object().shape({
         id: Yup.string().required(),
         oldPassword: Yup.string().required('Old Password is required'),
-        newPassword: Yup.string().required('New Passsword is reuquired'),
+        newPassword: Yup.string()
+            .required('New Passsword is reuquired')
+            .test('len', 'New Password must be at least 6 characters', val => val.length > 5),
         confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Cofirm New Password must match New Password')
     });
 

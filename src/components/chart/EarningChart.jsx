@@ -30,30 +30,25 @@ const earningChartOptions = {
 
 
 const EarningChart = (props) => {
-    const { slot } = props;
+    const { slot, days, months } = props;
     const theme = useTheme();
     const { primary, secondary } = theme.palette.text;
     const line = theme.palette.divider;
     const [options, setOptions] = useState(earningChartOptions);
-    const { status, statistic } = useSelector((state) => state.statistic);
     const [series7Days, setSeries7Days] = useState([]);
     const [sevenDays, setSevenDays] = useState([]);
     const [twelveMonths, setTwelveMonths] = useState([]);
     const [series12Months, setSeries12Months] = useState([]);
-    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (status === action_status.IDLE) {
-            dispatch(getStatistic());
-        }
-        if (status === action_status.SUCCEEDED) {
-            setSeries7Days(Object.values(statistic[0]));
-            setSevenDays(Object.keys(statistic[0]));
-            setSeries12Months(Object.values(statistic[1]));
-            setTwelveMonths(Object.keys(statistic[1]));
+        if (days && months) {
+            setSeries7Days(Object.values(days));
+            setSevenDays(Object.keys(days));
+            setSeries12Months(Object.values(months));
+            setTwelveMonths(Object.keys(months));
         }
 
-    }, [status, dispatch, statistic]);
+    }, [days, months]);
 
     useEffect(() => {
         setOptions((prevState) => ({

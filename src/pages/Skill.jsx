@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { filter } from 'lodash';
-import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     Card,
@@ -24,14 +23,14 @@ import { useSnackbar } from 'notistack';
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { deleteSkill, getSkills, refresh, selectAllSkills } from '../app/slices/skillSlice';
+import { createSkill, deleteSkill, getSkills, refresh, selectAllSkills, updateSkill } from '../app/slices/skillSlice';
 import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { fDateTimeSuffix } from '../utils/formatTime';
 import { clearMessage } from '../app/slices/messageSlice';
-import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 import AlertDialog from '../components/AlertDialog';
+import SkillFormDialog from '../features/skill/SkillFormDialog';
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.success.dark,
@@ -90,17 +89,28 @@ const Skill = () => {
 
     const [open, setOpen] = useState(false);
 
+    const [openCreateFormDialog, setOpenCreateFormDialog] = useState(false);
+
+    const [openUpdateFormDialog, setOpenUpdateFormDialog] = useState(false);
+
     const dispatch = useDispatch();
 
     const skills = useSelector(selectAllSkills);
 
-    const { isDeleted, isUpdated } = useSelector((state) => state.skills);
+    const { isAdded, isDeleted, isUpdated } = useSelector((state) => state.skills);
 
     const { message } = useSelector((state) => state.message);
 
     const { enqueueSnackbar } = useSnackbar();
 
     const { status } = useSelector((state) => state.skills);
+
+    useEffect(() => {
+        if (isAdded) {
+            enqueueSnackbar('Created successfully', { variant: 'success' });
+            dispatch(refresh());
+        }
+    }, [isAdded, enqueueSnackbar, dispatch]);
 
     useEffect(() => {
         if (status === action_status.IDLE) {
@@ -112,9 +122,11 @@ const Skill = () => {
 
     useEffect(() => {
         if (isUpdated) {
+            enqueueSnackbar("Updated successfully", { variant: 'success' });
             dispatch(getSkills());
+            dispatch(refresh());
         }
-    }, [isUpdated])
+    }, [isUpdated, enqueueSnackbar, dispatch]);
 
     useEffect(() => {
         if (isDeleted) {
@@ -128,7 +140,23 @@ const Skill = () => {
             enqueueSnackbar(message, { variant: 'error' });
             dispatch(clearMessage());
         }
-    }, [message, dispatch, enqueueSnackbar])
+    }, [message, dispatch, enqueueSnackbar]);
+
+    const handleClickOpenCreateFormDialog = () => {
+        setOpenCreateFormDialog(true);
+    };
+
+    const handleClickCloseCreateFormDialog = () => {
+        setOpenCreateFormDialog(false);
+    };
+
+    const handleClickOpenUpdateFormDialog = () => {
+        setOpenUpdateFormDialog(true);
+    };
+
+    const handleClickCloseUpdateFormDialog = () => {
+        setOpenUpdateFormDialog(false);
+    };
 
     const handleDeleteClick = () => {
         setOpen(true);
@@ -211,11 +239,17 @@ const Skill = () => {
                         <Typography variant="h4" >
                             Skill
                         </Typography>
-                        <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>} >
+                        <ButtonStyle variant="contained" onClick={handleClickOpenCreateFormDialog} startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>} >
                             New Skill
                         </ButtonStyle>
                     </Stack>
-            
+                    <SkillFormDialog
+                        open={openCreateFormDialog}
+                        handleClose={handleClickCloseCreateFormDialog}
+                        dialogTitle='Create Skill'
+                        dialogContent='Create a new skill'
+                        skillAction={createSkill}
+                    />
                     <Card>
                         <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='skill'/>
                         <TableContainer sx={{ minWidth: 800 }}>
@@ -242,7 +276,7 @@ const Skill = () => {
                                         <TableCell align="left" width={350}>{fDateTimeSuffix(updatedAt)}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
-                                                <MoreMenuLinkItem to={`update/${id}`} title="Edit" iconName="eva:edit-fill" />
+                                                <MoreMenuItem title="Edit" iconName="eva:edit-fill" handleClick={handleClickOpenUpdateFormDialog} />
                                                 <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" handleClick={handleDeleteClick} id={id} />
                                                 <AlertDialog
                                                     itemId={id}
@@ -252,6 +286,14 @@ const Skill = () => {
                                                     content='Are you sure to delete this skill'
                                                     handleConfirm={handleDelete}
                                                     color='error'
+                                                />
+                                                <SkillFormDialog
+                                                    open={openUpdateFormDialog}
+                                                    handleClose={handleClickCloseUpdateFormDialog}
+                                                    dialogTitle='Edit Skill'
+                                                    dialogContent='Update skill'
+                                                    skill={row}
+                                                    skillAction={updateSkill}
                                                 />
                                             </ MoreMenu>
                                         </TableCell>

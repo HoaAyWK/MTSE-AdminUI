@@ -29,15 +29,14 @@ const PageStyle = styled(Page)(({theme}) => ({
 
 const AccountSettings = () => {
     const [value, setValue] = useState('1');
-    const { user: userState } = useSelector((state) => state.auth);
-    const [user, setUser] = useLocalStorage('user', userState);
+    const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!userState) {
+        if (!user) {
             dispatch(getCurrentUser());
         }
-    }, [userState, dispatch]);
+    }, [user, dispatch]);
 
 
     const handleChangeValue = (e, newValue) => {
@@ -55,9 +54,9 @@ const AccountSettings = () => {
                 </Stack>
             </Box>
             <PageStyle title="Account Settings">
-                <TabContext value={value} sx={{ backgroundColor: 'transparent' }}>
+                <TabContext value={value}>
                     <Box >
-                        <TabList onChange={handleChangeValue} aria-label='account-settings-tabs' textColor='text.primary'>
+                        <TabList onChange={handleChangeValue} aria-label='account-settings-tabs' textColor='primary'>
                             <Tab label='General' value='1' />
                             <Tab label='Change Password' value='2' />
                         </TabList>

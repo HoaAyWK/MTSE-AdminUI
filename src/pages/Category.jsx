@@ -16,6 +16,7 @@ import {
     TableContainer,
     TablePagination,
     Alert,
+    Avatar,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,14 +25,14 @@ import { useSnackbar } from 'notistack';
 import Page from '../components/Page';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { deleteCategory, getCategories, refresh, selectAllCategories } from '../app/slices/categorySlice';
+import { createCategory, deleteCategory, getCategories, refresh, selectAllCategories, updateCategory } from '../app/slices/categorySlice';
 import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { fDateTimeSuffix } from '../utils/formatTime';
 import { clearMessage } from '../app/slices/messageSlice';
-import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
 import AlertDialog from '../components/AlertDialog';
+import CategoryFormDialog from '../features/categories/CategoryFormDialog';
 
 const ButtonStyle = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.success.dark,
@@ -42,7 +43,7 @@ const ButtonStyle = styled(Button)(({ theme }) => ({
 }));
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Name', alignRight: false },
+    { id: 'name', label: 'Category', alignRight: false },
     { id: 'createdAt', label: 'Created At', alignRight: false },
     { id: 'updatedAt', label: 'Updated At', alignRight: false },
     { id: '', label: '', alignRight: false },
@@ -90,11 +91,15 @@ const Category = () => {
 
     const [open, setOpen] = useState(false);
 
+    const [openCreateCategoryDialog, setOpenCreateFormDialog] = useState(false);
+
+    const [openUpdateCategoryDialog, setOpenUpdateCategoryDialog] = useState(false);
+
     const dispatch = useDispatch();
 
     const categories = useSelector(selectAllCategories);
 
-    const { isDeleted, isUpdated } = useSelector((state) => state.categories);
+    const { isAdded, isDeleted, isUpdated } = useSelector((state) => state.categories);
 
     const { message } = useSelector((state) => state.message);
 
@@ -112,9 +117,11 @@ const Category = () => {
 
     useEffect(() => {
         if (isUpdated) {
+            enqueueSnackbar('Updated successfully', { variant: 'success' });
+            dispatch(refresh());
             dispatch(getCategories());
         }
-    }, [isUpdated, dispatch])
+    }, [isUpdated, dispatch, enqueueSnackbar])
 
     useEffect(() => {
         if (isDeleted) {
@@ -128,7 +135,30 @@ const Category = () => {
             enqueueSnackbar(message, { variant: 'error' });
             dispatch(clearMessage());
         }
-    }, [message, dispatch, enqueueSnackbar])
+    }, [message, dispatch, enqueueSnackbar]);
+
+    useEffect(() => {
+        if (isAdded) {
+            enqueueSnackbar("Created successfully", { variant: 'success' });
+            dispatch(refresh());
+        }
+    }, [isAdded, enqueueSnackbar, dispatch]);
+
+    const handleOpenCreateCategoryDialog = () => {
+        setOpenCreateFormDialog(true);
+    };
+
+    const handleCloseCreateCategoryDialog = () => {
+        setOpenCreateFormDialog(false);
+    };
+
+    const handleOpenUpdateCategoryDialog = () => {
+        setOpenUpdateCategoryDialog(true);
+    };
+
+    const handleCloseUpdateCategoryDialog = () => {
+        setOpenUpdateCategoryDialog(false);
+    };
 
     const handleDeleteClick = () => {
         setOpen(true);
@@ -211,11 +241,21 @@ const Category = () => {
                         <Typography variant="h4" >
                             Category
                         </Typography>
-                        <ButtonStyle variant="contained" component={RouterLink} to="new" startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>} >
+                        <ButtonStyle
+                            variant="contained"
+                            startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>}
+                            onClick={handleOpenCreateCategoryDialog}
+                        >
                             New Category
                         </ButtonStyle>
                     </Stack>
-            
+                    <CategoryFormDialog
+                        open={openCreateCategoryDialog}
+                        handleClose={handleCloseCreateCategoryDialog}
+                        dialogTitle='Create category'
+                        dialogContent='Create a new category'
+                        categoryAction={createCategory}
+                    />
                     <Card>
                         <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='category'/>
                         <TableContainer sx={{ minWidth: 800 }}>
@@ -229,7 +269,7 @@ const Category = () => {
                                 />
                                 <TableBody>
                                 {filteredCategories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, name, createdAt, updatedAt } = row;
+                                    const { id, name, createdAt, updatedAt, image } = row;
                 
                                     return (
                                     <TableRow
@@ -237,12 +277,30 @@ const Category = () => {
                                         key={id}
                                         tabIndex={-1}
                                     >
-                                        <TableCell align="left" width={450}>{name}</TableCell>
+                                        <TableCell align="left" width={350}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                {image ? (
+                                                    <Avatar variant='rounded' src={image} alt={name} />
+                                                ) : (
+                                                    <Avatar variant='rounded'>
+                                                        <Iconify icon='bx:category-alt' width={24} height={24} />
+                                                    </Avatar>
+                                                )}
+                                                <Typography variant='body1' sx={{ marginInlineStart: 1 }}>
+                                                    {name}
+                                                </Typography>
+                                            </Box>
+                                        </TableCell>
                                         <TableCell align="left">{fDateTimeSuffix(createdAt)}</TableCell>
                                         <TableCell align="left" width={350}>{fDateTimeSuffix(updatedAt)}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
-                                                <MoreMenuLinkItem to={`update/${id}`} title="Edit" iconName="eva:edit-fill" />
+                                                <MoreMenuItem title="Edit" iconName="eva:edit-fill" handleClick={handleOpenUpdateCategoryDialog}/>
                                                 <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" handleClick={handleDeleteClick} id={id} />
                                                 <AlertDialog
                                                     itemId={id}
@@ -252,6 +310,14 @@ const Category = () => {
                                                     content='Are you sure to delete this category'
                                                     handleConfirm={handleDelete}
                                                     color='error'
+                                                />
+                                                <CategoryFormDialog
+                                                    open={openUpdateCategoryDialog}
+                                                    handleClose={handleCloseUpdateCategoryDialog}
+                                                    dialogTitle='Update category'
+                                                    dialogContent='Update category name and category image'
+                                                    categoryAction={updateCategory}
+                                                    category={row}
                                                 />
                                             </ MoreMenu>
                                         </TableCell>

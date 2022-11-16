@@ -14,7 +14,6 @@ import User from './pages/User';
 import Profile from './pages/Profile';
 import AccountSettings from './pages/AccountSettings';
 import Package from './pages/Package';
-import CreatePoint from './pages/CreatePoint';
 import NotFound from './pages/Page404';
 import Payment from './pages/Payment';
 import Job from './pages/Job';
@@ -22,6 +21,9 @@ import UserDetails from './pages/UserDetails';
 import JobDetails from './pages/JobDetails';
 import Transaction from './pages/Transaction';
 import Skill from './pages/Skill';
+import Freelancer from './pages/Freelancer';
+import FreelancerDetails from './pages/FreelancerDetails';
+import Employer from './pages/Employer';
 
 const Router = () => {
     return useRoutes([
@@ -32,10 +34,11 @@ const Router = () => {
             ,
             children: [
                 { path: 'app', element: <DashboardApp /> },
-                // { path: 'users', element: <User />},
-                // { path: 'users/profile', element: <Profile />},
-                // { path: 'users/account', element: <AccountSettings />},
-                // { path: 'users/:userId', element: <UserDetails />},
+                { path: 'freelancers', element: <Freelancer />},
+                { path: 'freelancers/:freelancerId', element: <FreelancerDetails />},
+                { path: 'users/profile', element: <Profile />},
+                { path: 'users/account', element: <AccountSettings />},
+                { path: 'employers', element: <Employer />},
                 { path: 'categories', element: <Category />},
                 { path: 'categories/new', element: <CreateCategory />},
                 { path: 'categories/update/:categoryId', element: <UpdateCategory />},

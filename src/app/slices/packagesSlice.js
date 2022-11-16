@@ -9,6 +9,7 @@ const packagesAdapter = createEntityAdapter();
 const initialState = packagesAdapter.getInitialState({
     error: null,
     status: action_status.IDLE,
+    addOrUpdateStatus: action_status.IDLE,
     isAdded: false,
     isUpdated: false,
     isDeleted: false
@@ -23,7 +24,7 @@ export const getPackages = createAsyncThunk(
     }
 );
 
-export const createPackages = createAsyncThunk(
+export const createPackage = createAsyncThunk(
     'packages/create',
     async (pkg, thunkApi) => {
         try {
@@ -45,7 +46,8 @@ export const updatePackage = createAsyncThunk(
     'packages/update',
     async (pkg, thunkApi) => {
         try {
-            const { data } = await api.put(`$/packages/admin/${pkg.id}`, pkg);
+            const { id, ...pkgData } = pkg;
+            const { data } = await api.put(`/packages/admin/${id}`, pkgData);
 
             return data;
         } catch (error) {
@@ -63,7 +65,7 @@ export const deletePackage = createAsyncThunk(
     'packages/delete',
     async (id, thunkApi) => {
         try {
-            const { data } = await axios.delete(`$/packages/admin/${id}`);
+            const { data } = await api.delete(`/packages/admin/${id}`);
 
             data.id = id;
 
@@ -77,7 +79,7 @@ export const deletePackage = createAsyncThunk(
             return thunkApi.rejectWithValue();
         }   
     }
-)
+);
 
 const packagesSlice = createSlice({
     name: 'packages',
@@ -87,6 +89,7 @@ const packagesSlice = createSlice({
             state.isAdded = false;
             state.isUpdated = false;
             state.isDeleted = false;
+            state.addOrUpdateStatus = action_status.IDLE;
         }
     },
     extraReducers: (builder) => {
@@ -102,12 +105,26 @@ const packagesSlice = createSlice({
                 state.status = action_status.FAILED;
                 state.error = action.error;
             })
-            .addCase(createPackages.pending, (state, action) => {
+            .addCase(createPackage.pending, (state, action) => {
                 state.isAdded = false;
+                state.addOrUpdateStatus = action_status.LOADING;
             })
-            .addCase(createPackages.fulfilled, (state, action) => {
+            .addCase(createPackage.fulfilled, (state, action) => {
                 packagesAdapter.addOne(state, action.payload.package);
+                state.addOrUpdateStatus = action_status.SUCCEEDED;
                 state.isAdded = true;
+            })
+            .addCase(updatePackage.pending, (state, action) => {
+                state.addOrUpdateStatus = action_status.LOADING;
+                state.isUpdated = false;
+            })
+            .addCase(updatePackage.fulfilled, (state, action) => {
+                state.addOrUpdateStatus = action_status.SUCCEEDED;
+                state.isUpdated = true;
+            })
+            .addCase(updatePackage.rejected, (state, action) => {
+                state.addOrUpdateStatus = action_status.FAILED;
+                state.isUpdated = false;
             })
             .addCase(deletePackage.pending, (state, action) => {
                 state.isDeleted = false;

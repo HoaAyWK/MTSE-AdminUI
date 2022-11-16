@@ -16,14 +16,14 @@ const InfoAreaStyle = styled(Card)(({theme}) => ({
 const InfoContentStyle = styled('div')(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
-    padding: theme.spacing(2)
+    
 }));
 
 const CardInfo = ({ children, title }) => {
     return (
         <InfoAreaStyle>
             <CardContent>
-                <Typography variant='h5' sx={{ paddingInlineStart: 2, fontWeight: 700, lineHeight: 1.5 }}>
+                <Typography variant='h5' sx={{ fontWeight: 700, lineHeight: 1.5 }}>
                     {title}
                 </Typography>
                 <InfoContentStyle>

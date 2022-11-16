@@ -6,7 +6,7 @@ import {
     Card,
     Table,
     Stack,
-    Button,
+    Avatar,
     TableRow,
     TableBody,
     TableCell,
@@ -17,35 +17,25 @@ import {
     TablePagination,
     Alert,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
 import Page from '../components/Page';
-import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { clearMessage } from '../app/slices/messageSlice';
 import MoreMenuItem from '../components/tables/MoreMenuItem';
-import { selectAllPackages, refresh, getPackages, deletePackage, createPackage, updatePackage } from '../app/slices/packagesSlice';
-import PackageFormDialog from '../features/packages/PackageFormDialog';
-import AlertDialog from '../components/AlertDialog';
-
-const ButtonStyle = styled(Button)(({ theme }) => ({
-    backgroundColor: theme.palette.success.dark,
-    '&:hover': {
-        backgroundColor: theme.palette.success.main,
-    },
-    color: '#fff'
-}));
+import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
+import { selectAllEmployers, getEmployers } from '../app/slices/employerSlice';
+import LetterAvatar from '../components/LetterAvatar';
 
 const TABLE_HEAD = [
-    { id: 'description', label: 'Description', alignRight: false },
-    { id: 'price', label: 'Price', alignRight: true},
-    { id: 'canPost', label: 'Can Post', alignRight: true },
-    { id: 'point', label: 'Point', alignRight: true},
-    { id: '', label: '', alignRight: false},
+    { id: 'companyName', label: 'Company Name', alignRight: false },
+    { id: 'companySize', label: 'Company Size', alignRight: true },
+    { id: 'email', label: 'Email', alignRight: false},
+    { id: 'phone', label: 'Phone', alignRight: false},
+    { id: '', label: '', alignRight: false }
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -72,93 +62,38 @@ function applySortFilter(array, comparator, query) {
         return a[1] - b[1];
     });
     if (query) {
-        return filter(array, (_user) => _user.description.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+        return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
     }
     return stabilizedThis.map((el) => el[0]);
 }
 
-const Package = () => {
+const Employer = () => {
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
 
-    const [orderBy, setOrderBy] = useState('price');
+    const [orderBy, setOrderBy] = useState('name');
 
     const [filterName, setFilterName] = useState('');
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-    const [openCreateDialog, setOpenCreateDialog] = useState(false);
-
-    const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-
     const dispatch = useDispatch();
-    
-    const packages = useSelector(selectAllPackages);
+
+    const employers = useSelector(selectAllEmployers);
+
+    const { status } = useSelector((state) => state.employers);
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { status, isAdded, isUpdated, isDeleted } = useSelector((state) => state.packages);
-
     useEffect(() => {
         if (status === action_status.IDLE) {
-            dispatch(getPackages());
+            dispatch(getEmployers());
         }
+
         dispatch(clearMessage());
-        dispatch(refresh());
     }, [dispatch, status]);
 
-    useEffect(() => {
-        if (isDeleted) {
-            enqueueSnackbar('Deleted successfully', { variant: 'success' });
-            dispatch(refresh());
-        }
-    }, [isDeleted, enqueueSnackbar, dispatch]);
-
-    useEffect(() => {
-        if (isAdded) {
-            enqueueSnackbar('Created successfully', { variant: 'success' });
-            dispatch(refresh());
-        }
-    }, [isAdded, enqueueSnackbar, dispatch]);
-
-    useEffect(() => {
-        if (isUpdated) {
-            enqueueSnackbar('Updated successfully', { variant: 'success' });
-            dispatch(refresh());
-            dispatch(getPackages());
-        }
-    }, [isUpdated, enqueueSnackbar, dispatch]);
-
-    const handleOpenCreateDialog = () => {
-        setOpenCreateDialog(true);
-    };
-
-    const handleCloseCreateDialog = () => {
-        setOpenCreateDialog(false);
-    };
-
-    const handleOpenUpdateDialog = () => {
-        setOpenUpdateDialog(true);
-    };
-
-    const handleCloseUpdateDialog = () => {
-        setOpenUpdateDialog(false);
-    };
-
-    const handleOpenDeleteDialog = () => {
-        setOpenDeleteDialog(true);
-    };
-
-    const handleCloseDeleteDialog  = () => {
-        setOpenDeleteDialog(false);
-    };
-
-    const handleDelete = (id) => {
-        dispatch(deletePackage(id));
-    };
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -181,7 +116,7 @@ const Package = () => {
 
     if (status === action_status.LOADING) {
         return (
-            <Page title='Package'>
+            <Page title='employers'>
                 <Container maxWidth='xl'>
                     <Box 
                         sx={{
@@ -199,8 +134,8 @@ const Package = () => {
         )
     } else if (status === action_status.FAILED) {
         return (
-            <Page title='Package'>
-                <Container maxWidth='xl'>
+            <Page title='employers'>
+                <Container>
                 <Box 
                         sx={{
                             width: '100%',
@@ -216,44 +151,35 @@ const Package = () => {
             </Page>
         )
     } else if (status === action_status.SUCCEEDED) {
-        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - packages.length) : 0;
+        const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - employers.length) : 0;
 
-        const filteredPackages = applySortFilter(packages, getComparator(order, orderBy), filterName);
+        const filteredEmployer = applySortFilter(employers, getComparator(order, orderBy), filterName);
 
-        const isPackageNotFound = filteredPackages.length === 0;
+        const isEmployerNotFound = filteredEmployer.length === 0;
 
         return (
-            <Page title="Package">
+            <Page title="Employers">
                 <Container maxWidth='xl'>
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4" >
-                            Packages
+                            Employers
                         </Typography>
-                        <ButtonStyle variant="contained" onClick={handleOpenCreateDialog} startIcon={<Iconify icon="eva:plus-fill" style={{ color: 'white' }}/>}>
-                            New Package
-                        </ButtonStyle>
                     </Stack>
-                    <PackageFormDialog
-                        open={openCreateDialog}
-                        handleClose={handleCloseCreateDialog}
-                        dialogTitle='Create Package'
-                        dialogContent='Create a new package'
-                        packageAction={createPackage}
-                    />
+            
                     <Card>
-                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='package'/>
+                        <SimpleTableListToolbar filterName={filterName} onFilterName={handleFilterByName} title='employer'/>
                         <TableContainer sx={{ minWidth: 800 }}>
                             <Table>
                                 <SimpleTableListHead
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={packages.length}
+                                    rowCount={employers.length}
                                     onRequestSort={handleRequestSort}
                                 />
                                 <TableBody>
-                                {filteredPackages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, description, point, price, canPost } = row;
+                                {filteredEmployer.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                    const { id, companyName, user, companySize } = row;
                 
                                     return (
                                     <TableRow
@@ -261,31 +187,36 @@ const Package = () => {
                                         key={id}
                                         tabIndex={-1}
                                     >
-                                        <TableCell align="left" width={500}>{description}</TableCell>
-                                        <TableCell align="right" width={150}>{`$${price}`}</TableCell>
-                                        <TableCell align="right" widht={120}>{canPost}</TableCell>
-                                        <TableCell align="right" width={120}>{point}</TableCell>
+                                        <TableCell align="left" width={300}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                {user?.image ? (
+                                                    <Avatar src={user?.image} alt={`${companyName}`} />
+                                                ) : (
+                                                    <LetterAvatar name={`${companyName}`} />
+                                                )}
+                                                <Typography
+                                                    variant='body1'
+                                                    sx={{
+                                                        marginInlineStart: 1
+                                                    }}
+                                                >   
+                                                    {`${companyName}`}
+                                                </Typography>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {companySize}
+                                        </TableCell>
+                                        <TableCell align="left" width={350}>{user?.email}</TableCell>
+                                        <TableCell align="left">{user?.phone}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
-                                                <MoreMenuItem title="Edit" iconName="eva:edit-fill" handleClick={handleOpenUpdateDialog} />
-                                                <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" handleClick={handleOpenDeleteDialog} id={id} />
-                                                <PackageFormDialog
-                                                    open={openUpdateDialog}
-                                                    handleClose={handleCloseUpdateDialog}
-                                                    dialogTitle='Update Package'
-                                                    dialogContent='Update package details'
-                                                    packageAction={updatePackage}
-                                                    pkg={row}
-                                                />
-                                                <AlertDialog
-                                                    itemId={id}
-                                                    open={openDeleteDialog}
-                                                    handleClose={handleCloseDeleteDialog}
-                                                    title='Delete Skill'
-                                                    content='Are you sure to delete this skill'
-                                                    handleConfirm={handleDelete}
-                                                    color='error'
-                                                />
+                                                <MoreMenuLinkItem to={`/dashboard/employers/${id}`} iconName='eva:eye-outline' title='Details' />
                                             </ MoreMenu>
                                         </TableCell>
                                     </TableRow>
@@ -298,7 +229,7 @@ const Package = () => {
                                 )}
                                 </TableBody>
                 
-                                {isPackageNotFound && (
+                                {isEmployerNotFound && (
                                 <TableBody>
                                     <TableRow>
                                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -312,7 +243,7 @@ const Package = () => {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={packages.length}
+                            count={employers.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
@@ -323,6 +254,6 @@ const Package = () => {
             </Page>
         );
     }
-}
+};
 
-export default Package;
+export default Employer;

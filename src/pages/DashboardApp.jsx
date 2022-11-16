@@ -13,6 +13,7 @@ import {
     ListItemButton,
     ListItemSecondaryAction,
     ListItemText,
+    CircularProgress,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
@@ -76,8 +77,8 @@ const DashboardApp = () => {
         }
 
         if (status === action_status.SUCCEEDED) {
-            setTotalEarning(statistic[2]);
-            setTotalUsers(statistic[3]);
+            setTotalEarning(statistic[1]);
+            setTotalUsers(statistic[0]);
         }
     }, [status, dispatch, statistic]);
 
@@ -102,7 +103,9 @@ const DashboardApp = () => {
                     </Grid>
                 </Grid>
                 {status === action_status.LOADING ? (
-                    <div>Loading</div>
+                    <Box sx={{ minHeight: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CircularProgress />
+                    </Box>
                 ) : (
                     <Grid container spacing={3} sx={{ marginBlockStart: 2 }}>
                         <Grid item xs={12} md={7} lg={8}>
@@ -153,7 +156,9 @@ const DashboardApp = () => {
                             </Grid>
                             <MainCard content={false} sx={{ mt: 1.5 }}>
                                 <Box sx={{ pt: 1, pr: 2 }}>
-                                    <EarningChart slot={slot} />
+                                    {statistic.length > 0 && (
+                                        <EarningChart days={statistic[2]} months={statistic[3]} slot={slot} />
+                                    )}
                                 </Box>
                             </MainCard>
                         </Grid>

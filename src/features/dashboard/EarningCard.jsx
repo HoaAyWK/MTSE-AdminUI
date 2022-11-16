@@ -74,7 +74,7 @@ const EarningCard = ({ isLoading, total }) => {
                                 <Grid container alignItems="center">
                                     <Grid item>
                                         <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }} color='text.secondary'>
-                                            {`$${total}`}
+                                            {total?.length > 0 ? `$${total[0]?.amount}` : '$0'}
                                         </Typography>
                                     </Grid>
                                     <Grid item>

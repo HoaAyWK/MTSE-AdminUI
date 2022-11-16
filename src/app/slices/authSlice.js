@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from 'uuid';
 
-import { BASE_API_URL, action_status, ROLES, MESSAGE_VARIANT, MESSAGE_ERRORS } from '../constants';
-import { setMessage } from './messageSlice';
 import api from '../api';
+import { BASE_API_URL, action_status, MESSAGE_VARIANT } from '../constants';
+import { setMessage } from './messageSlice';
+import { uploadTaskPromise } from '../../utils/uploadTaskPromise';
 
 const initialState = {
     user: null,
@@ -54,8 +56,15 @@ export const updateAccount = createAsyncThunk(
     'auth/updateAccount',
     async (updateBody, thunkApi) => {
         try {
-            const { email, ...dataToUpdate }  = updateBody;
-            const { data } = await axios.put(`${BASE_API_URL}/profile`, dataToUpdate, { withCredentials: true});
+            const { email, image, address, city, country, ...dataToUpdate }  = updateBody;
+            const filePath = `files/avatars/${uuidv4()}`;
+
+            if (image) {
+                dataToUpdate.image = await uploadTaskPromise(filePath, image);
+            };
+
+            dataToUpdate.address = address + ', ' + city + ', ' + country;
+            const { data } = await api.put(`/users/profile`, dataToUpdate);
 
             return data;
         } catch (error) {
@@ -78,11 +87,7 @@ export const changePassword = createAsyncThunk(
                 newPassword: updateBody.newPassword
             };
 
-            const { data } = await axios.put(
-                `${BASE_API_URL}/password/change`,
-                passwords,
-                { withCredentials: true }
-            );
+            const { data } = await api.put(`/account/changePassword`, passwords);
 
             return data;
         } catch (error) {
@@ -149,6 +154,7 @@ const authSlice = createSlice({
             .addCase(updateAccount.fulfilled, (state, action) => {
                 state.updated = true;  
                 state.updateStatus = action_status.SUCCEEDED;
+                state.user = action.payload.user;
             })
             .addCase(updateAccount.rejected, (state, action) => {
                 state.updateStatus = action_status.FAILED;

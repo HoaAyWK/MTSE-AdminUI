@@ -51,7 +51,7 @@ const Offer = ({ offer }) => {
         } else {
             setShowMoreHidden(true);
         }
-    }, [ref.current, offer])
+    }, [ref.current, offer]);
 
     useEffect(() => {
         window.addEventListener('resize', handleResize, false);

@@ -74,26 +74,26 @@ const AccountForm = (props) => {
 
     const UserSchema = Yup.object().shape({
         id: Yup.string(),
-        name: Yup.string().required('Name is required'),
         email: Yup.string(),
         phone: Yup.string().required('Phone is required'),
-        gender: Yup.mixed().oneOf(['Male', 'Female']),
+        introduction: Yup.string().required('Address is required'),
         address: Yup.string().required('Address is required'),
         city: Yup.string().required('City is required'),
         country: Yup.string().required('Country is required'),
-        avatar: Yup.mixed()
+        image: Yup.mixed()
     });
+
+    const address = user?.address?.split(', ');
 
     const defaultValues = {
         id: user?.id,
-        name: user?.name,
         email: user?.email,
         phone: user?.phone,
-        gender: user?.gender === 'None' ? 'Male' : user?.gender,
-        address: user?.address,
-        city: user?.city,
-        country: user?.country,
-        avatar: null
+        introduction: user?.introduction,
+        address: address?.length === 3 ? address[0] : '',
+        city: address?.length === 3 ? address[1] : '',
+        country: address?.length === 3 ? address[2] : '',
+        image: '',
     };
     
     const methods = useForm({
@@ -116,20 +116,23 @@ const AccountForm = (props) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={5} sx={{ margin: 0 }}>
                     <PaperStyle sx={{ padding: '80px 24px'}}>
-                        <AvatarUploader avatarUrl={user?.avatar?.url} name='avatar' setFocus={setFocus} />
+                        <AvatarUploader avatarUrl={user?.image} name='image' setFocus={setFocus} />
                     </PaperStyle>
                 </Grid>
                 <Grid item xs={12} md={7}>
                     <PaperStyle>
                         <BoxFieldStyle>
-                            <RHFTextField name='name' label='Name *' />
                             <RHFTextField name='email' label='Email *' disabled={true} />
                             <RHFTextField name='phone' label='Phone *' />
                             <RHFTextField name='address' label='Address *' />
                             <RHFTextField name='city' label='City *' />
                             <RHFTextField name='country' label='Country *' />
-                            <RHFRadioGroup name='gender' id='radios-gender' label='Gender' items={genders} row />
                         </BoxFieldStyle>
+                        <Box sx={{
+                            marginBlock: 2
+                        }}>
+                            <RHFTextField name="introduction" label="Introduction *" multiline minRows={5} />
+                        </Box>
                         <Box
                             sx={{ display: 'flex', justifyContent: 'flex-end' }}
                         >

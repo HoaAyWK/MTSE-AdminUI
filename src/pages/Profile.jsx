@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { Container, Box, Typography, Stack, Avatar, Grid, Link as MuiLink } from '@mui/material';
+import { Container, Box, Typography, Stack, Avatar, Grid, Link as MuiLink, Card, CardContent, CardHeader } from '@mui/material';
 
 import Page from '../components/Page';
 import BreadcrumbRouter from '../components/BreadcrumbRouter';
@@ -9,6 +9,7 @@ import { getCurrentUser } from '../app/slices/authSlice';
 import Iconify from '../components/Iconify';
 import CardInfo from '../components/CardInfo';
 import LetterAvatar from '../components/LetterAvatar';
+import ShowMoreParagraph from '../components/ShowMoreParagraph';
 
 const breadcrumbNameMap = {
     '': 'Dashboard',
@@ -23,8 +24,8 @@ const PaperStyle = styled(Page)(({theme}) => ({
     borderRadius: theme.shape.borderRadius,
     transition: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     zIndex: 0,
-    position: 'relative',
     height: 280,
+    position: 'relative',
     margin: theme.spacing(5, 0)
 }));
 
@@ -58,6 +59,7 @@ const AvatarStyle = styled(Avatar)(({ theme }) => ({
         height: 128,
     }
 }));
+
 
 const NameAreaStyle = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('xs')]: {
@@ -131,17 +133,17 @@ const Profile = () => {
             </Box>
             <PaperStyle title="Profile">
                 <AvatarAreaStyle>
-                    {user?.avatar?.url ? (
-                        <AvatarStyle src={user.avatar.url} alt={user?.name} />
+                    {user?.image ? (
+                        <AvatarStyle src={user?.image} alt={user?.email} />
                     ) : (
                         <AvatarStyle />
                     )}
                     <NameAreaStyle>
                         <Typography variant='h4' color={'white'} sx={{ textTransform: 'capitalize' }}>
-                            {user?.name}
+                            Admin
                         </Typography>
-                        <Typography variant='h6' color={'white'} sx={{ textTransform: 'capitalize', opacity: 0.72 }}>
-                            {user?.roles?.join(" ")}
+                        <Typography variant='h6' color={'white'} sx={{ opacity: 0.72 }}>
+                            {user?.email}
                         </Typography>
                     </NameAreaStyle>
                 </AvatarAreaStyle>
@@ -159,7 +161,7 @@ const Profile = () => {
                                 <Typography variant='body1'>
                                     {'Live at '}
                                     <InfoHighlightStyle variant='body1' component={'span'}>
-                                        {`${user?.address}, ${user?.city}, ${user?.country}`}
+                                        {`${user?.address}`}
                                     </InfoHighlightStyle>
                                 </Typography>
                             </InfoLineStyle>
@@ -178,20 +180,16 @@ const Profile = () => {
                         </CardInfo>
                     </Grid>
                     <Grid item xs={12} md={7}>
-                        <CardInfo title='Social'>
-                            <InfoLineStyle>
-                                <Iconify icon='eva:facebook-fill' style={{ color: '#1877f2' }} width={25} height={25} sx={{ marginInlineEnd: 2 }} />
-                                <MuiLink href="https://fb.com" sx={{ textDecoration: 'none', color: 'text.primary' }}>https://www.facebook.com/admin</MuiLink>
-                            </InfoLineStyle>
-                            <InfoLineStyle>
-                                <Iconify icon='ant-design:instagram-filled' style={{ color: '#e02d69' }} width={25} height={25} sx={{ marginInlineEnd: 2 }} />
-                                <MuiLink href='https://www.instagram.com' sx={{ textDecoration: 'none', color: 'text.primary' }}>https://www.instagram.com/admin</MuiLink>
-                            </InfoLineStyle>
-                            <InfoLineStyle>
-                                <Iconify icon='eva:linkedin-fill' style={{ color: '#1877f2' }} width={25} height={25} sx={{ marginInlineEnd: 2 }} />
-                                <MuiLink href='https://linkedin.com'sx={{ textDecoration: 'none', color: 'text.primary' }}>https://www.linkedin.com/admin</MuiLink>
-                            </InfoLineStyle>
-                        </CardInfo>
+                        {user?.introduction && (
+                            <Card>
+                                <CardContent>
+                                <Typography variant='h5' sx={{ marginBlockEnd: 2, fontWeight: 700, lineHeight: 1.5 }}>
+                                    Introduction
+                                </Typography>
+                                    <ShowMoreParagraph text={user?.introduction} />
+                                </CardContent>
+                            </Card>
+                        )} 
                     </Grid>
                 </Grid>
             </Box>
