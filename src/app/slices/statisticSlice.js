@@ -13,7 +13,7 @@ const initialState = {
 export const getStatistic = createAsyncThunk(
     'statistic/getStatistic',
     async () => {
-        const { data } = await api.get(`/transactions/stats`);
+        const { data } = await api.get(`/stats`);
         
         return data;
     }

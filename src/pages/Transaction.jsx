@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { filter } from 'lodash';
-import { Link as RouterLink } from 'react-router-dom';
 import {
     Avatar,
     Box,
@@ -18,15 +17,12 @@ import {
     Alert,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackbar } from 'notistack';
 
-import AlertDialog from '../components/AlertDialog';
 import SearchNotFound from '../components/SearchNotFound';
-import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
+import { SimpleTableListHead, SimpleTableListToolbar } from '../components/tables';
 import LetterAvatar from '../components/LetterAvatar';
-import MoreMenuItem from '../components/tables/MoreMenuItem';
 import Page from '../components/Page';
-import { getTransactions, refresh, selectAllTransactions, updateTransaction } from '../app/slices/transactionSlice';
+import { getTransactions, selectAllTransactions } from '../app/slices/transactionSlice';
 import { action_status } from '../app/constants';
 import Label from '../components/Label';
 import { fDate } from '../utils/formatTime';
@@ -34,11 +30,10 @@ import { clearMessage } from '../app/slices/messageSlice';
 
 const TABLE_HEAD = [
     { id: 'user', label: 'User', alignRight: false },
-    { id: 'creditCardReceiver', label: 'Credit Card', alignRight: false },
-    { id: 'total', label: 'Total', alignRight: true},
+    { id: 'pkg', label: 'Package', alignRight: false },
+    { id: 'price', label: 'Price', alignRight: true},
     { id: 'status', label: 'Status', alignRight: false},
     { id: 'createdAt', label: 'Created At', alignRight: false},
-    { id: '', label: '', alignRight: false },
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -81,17 +76,11 @@ const Transaction = () => {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const [open, setOpen] = useState(false);
-
     const dispatch = useDispatch();
 
     const transactions = useSelector(selectAllTransactions);
 
-    const { status, isUpdated } = useSelector((state) => state.transactions);
-
-    const { message } = useSelector((state) => state.message);
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { status } = useSelector((state) => state.transactions);
 
     useEffect(() => {
         dispatch(clearMessage());
@@ -102,21 +91,6 @@ const Transaction = () => {
             dispatch(getTransactions());
         }
     }, [dispatch, status]);
-
-    useEffect(() => {
-        if (isUpdated) {
-            enqueueSnackbar('Finised trannsaction', { variant: 'success' });
-            dispatch(getTransactions());
-            dispatch(refresh());
-        }
-    }, [isUpdated, dispatch, enqueueSnackbar]);
-
-    useEffect(() => {
-        if (message) {
-            enqueueSnackbar(message, { variant: 'error' });
-            dispatch(clearMessage());
-        }
-    }, [message, dispatch, enqueueSnackbar])
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -135,18 +109,6 @@ const Transaction = () => {
 
     const handleFilterByName = (event) => {
         setFilterName(event.target.value);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClickFinish = (transactionId) => {
-        dispatch(updateTransaction(transactionId));
     };
 
     if (status === action_status.LOADING) {
@@ -213,7 +175,7 @@ const Transaction = () => {
                                 />
                                 <TableBody>
                                 {filteredTransactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, createdAt, user, status, total, creditCardReceiver } = row;
+                                    const { id, createdAt, user, price, package: pkg } = row;
                 
                                     return (
                                     <TableRow
@@ -225,54 +187,30 @@ const Transaction = () => {
                                             <Box
                                                 sx={{ display: 'flex', alignItems: 'center' }}
                                             >
-                                                {user?.avatar?.url ? (
-                                                    <Avatar src={user.avatar.url} alt={user?.name} />
+                                                {user?.image ? (
+                                                    <Avatar src={user?.image} alt={user?.email} />
                                                 ) : (
-                                                    <LetterAvatar name={user?.name} />
+                                                    <LetterAvatar name={user?.email} />
                                                 )}
                                                 <Box
                                                     sx={{ ml: 1, display: 'flex', flexDirection: 'column' }}
                                                 >
                                                     <Typography
-                                                        component={RouterLink}
-                                                        to={`/dashboard/users/${user?.id}`} 
-                                                        color='text.primary'
-                                                        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' }}}
                                                         variant='body1'
-                                                    >
-                                                        {user?.name}
-                                                    </Typography>
-                                                    <Typography
-                                                        color='text.secondary'
-                                                        variant='caption'
                                                     >
                                                         {user?.email}
                                                     </Typography>
                                                 </Box>
                                             </Box>
                                         </TableCell>
-                                        <TableCell align="left" width={230}>{creditCardReceiver}</TableCell>
-                                        <TableCell align="right" width={100}>{`$${total}`}</TableCell>
+                                        <TableCell align="left" width={300}>{pkg?.description}</TableCell>
+                                        <TableCell align="right" width={100}>{`$${price}`}</TableCell>
                                         <TableCell align="left" width={80}>
-                                            <Label variant="ghost" color={(status === false && 'warning') || 'success'}>
-                                                {status ? 'Success' : 'Pending' }
+                                            <Label variant="ghost" color={'success'}>
+                                                Paid
                                             </Label>
                                         </TableCell>
                                         <TableCell align="left">{fDate(createdAt)}</TableCell>
-                                        <TableCell align="right">
-                                            <MoreMenu>
-                                                <MoreMenuItem title="Finish" iconName="ant-design:check-circle-twotone" id={id} handleClick={handleOpen} />
-                                                <AlertDialog
-                                                    open={open}
-                                                    handleClose={handleClose}
-                                                    title='Confrim Finish'
-                                                    content='Are you sure to finish this transaction'
-                                                    color='success'
-                                                    handleConfirm={handleClickFinish}
-                                                    itemId={id}
-                                                />
-                                            </ MoreMenu>
-                                        </TableCell>
                                     </TableRow>
                                     );
                                 })}

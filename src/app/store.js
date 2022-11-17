@@ -14,6 +14,7 @@ import transactionReducer from './slices/transactionSlice';
 import skillReducer from './slices/skillSlice';
 import freelancerReducer from './slices/freelancerSlice';
 import employerReducer from './slices/employerSlice';
+import appliedReducer from './slices/appliedSlice';
 
 export const store = configureStore({
     reducer: {
@@ -31,6 +32,7 @@ export const store = configureStore({
       transactions: transactionReducer,
       skills: skillReducer,
       freelancers: freelancerReducer,
-      employers: employerReducer
+      employers: employerReducer,
+      applieds: appliedReducer
     },
 });

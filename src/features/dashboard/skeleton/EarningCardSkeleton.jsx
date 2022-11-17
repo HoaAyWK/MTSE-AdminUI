@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, Grid } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 
-const EarningCard = () => (
+const EarningCardSkeleton = () => (
     <Card>
         <CardContent>
             <Grid container direction="column">
@@ -27,4 +27,4 @@ const EarningCard = () => (
     </Card>
 );
 
-export default EarningCard;
+export default EarningCardSkeleton;

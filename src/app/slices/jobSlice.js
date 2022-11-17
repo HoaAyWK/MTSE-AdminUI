@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 
-import { action_status, BASE_API_URL } from '../constants';
+import api from '../api';
+import { action_status } from '../constants';
 
 const jobsAdapter = createEntityAdapter();
 
@@ -13,7 +14,7 @@ const initialState = jobsAdapter.getInitialState({
 export const getJobs = createAsyncThunk(
     'jobs/getJobs',
     async () => {
-        const { data } = await axios.get(`${BASE_API_URL}/admin/jobs`, { withCredentials: true });
+        const { data } = await api.get(`/job/show`);
 
         return data;
     }
@@ -49,7 +50,7 @@ export const {
 
 export const selectJobsByUser = createSelector(
     [selectAllJobs, (state, userId) => userId],
-    (jobs, userId) => jobs.filter(job => job.owner.id === userId)
+    (jobs, userId) => jobs.filter(job => job.employer.id === userId)
 );
 
 const { reducer } = jobSlice;

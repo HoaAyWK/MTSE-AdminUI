@@ -10,14 +10,12 @@ import {
     Typography,
     Stack,
     Divider,
-    Card,
-    CardContent,
-    Button
 } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 
 import Page from '../components/Page';
+import ShowMoreParagraph from '../components/ShowMoreParagraph';
 import { getJobs, selectJobById } from '../app/slices/jobSlice';
 import { action_status } from '../app/constants';
 import LetterAvatar from '../components/LetterAvatar';
@@ -25,7 +23,8 @@ import Label from '../components/Label';
 import { fDate } from '../utils/formatTime';
 import JobInfoLine from '../features/jobs/JobInfoLine';
 import { getOffersByJob } from '../app/slices/offerSlice';
-import Offer from '../features/offers/Offer';
+import Applied from '../features/applieds/Applied';
+import { getAppliedsByJob } from '../app/slices/appliedSlice';
 
 const PaperStyle = styled(Paper)(({ theme }) => ({
     color: theme.palette.main,
@@ -38,18 +37,11 @@ const PaperStyle = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2)
 }));
 
-const CardStyle = styled(Card)(({ theme }) => ({
-    backgroundColor: theme.palette.grey[500_12],
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[0]
-}));
-
 const JobDetails = () => {
     const { jobId } = useParams();
-    console.log(jobId);
     const job = useSelector((state) => selectJobById(state, jobId));
     const { status } = useSelector((state) => state.jobs);
-    const { offers } = useSelector((state) => state.offers);
+    const { applieds } = useSelector((state) => state.applieds);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -57,6 +49,10 @@ const JobDetails = () => {
             dispatch(getJobs());
         }
     }, [status, dispatch]);
+
+    useEffect(() => {
+        dispatch(getAppliedsByJob(jobId));
+    }, [dispatch]);
 
     useEffect(() => {
         dispatch(getOffersByJob(jobId))
@@ -91,16 +87,16 @@ const JobDetails = () => {
                                             alignItems: 'center'
                                         }}
                                     >
-                                        {job?.owner?.avatar?.url ? (
-                                            <Avatar src={job.owner.avatar.url} alt={job?.name} />
+                                        {job?.employer?.user?.image ? (
+                                            <Avatar src={job.employer.user.image} alt={job?.name} />
                                         ) : (
-                                            <LetterAvatar name={job?.owner?.name} />
+                                            <LetterAvatar name={job?.employer?.user?.email} />
                                         )}
                                         <Stack spacing={0} sx={{ marginInlineStart: 1 }}>
-                                            <Tooltip title={job?.owner?.name}>
+                                            <Tooltip title={job?.employer?.companyName}>
                                                 <Typography
                                                     component={RouterLink}
-                                                    to={`/dashboard/users/${job?.owner?.id}`}
+                                                    to={`/dashboard/employers/${job?.employer?.id}`}
                                                     color='text.primary'
                                                     sx={{
                                                         textDecoration: 'none',
@@ -108,21 +104,15 @@ const JobDetails = () => {
                                                     }}
                                                     variant='body2'
                                                 >
-                                                        {job?.owner?.name}
+                                                    {job?.employer?.companyName}
                                                 </Typography>
                                             </Tooltip>
-                                            <Typography variant='caption' color='text.secondary'>{job?.owner?.email}</Typography>
+                                            <Typography variant='caption' color='text.secondary'>{job?.employer?.user?.email}</Typography>
                                         </Stack>
                                     </Box>
                                 </Stack>
                                 <Divider sx={{ marginBlock: 2 }} />
-                                <CardStyle>
-                                    <CardContent>
-                                        <Typography variant='body1'>
-                                            {job?.description}
-                                        </Typography>
-                                    </CardContent>
-                                </CardStyle>
+                                <ShowMoreParagraph text={job?.description} line={2} />
                                 <Box
                                     sx={{
                                         display: 'flex',
@@ -153,20 +143,16 @@ const JobDetails = () => {
                                     <JobInfoLine
                                         icon='fluent-mdl2:status-circle-inner'
                                         iconStyle={{
-                                            color: (job?.status === 'Open' && '#00b074') ||
-                                                (job?.status === 'Processing' && '#ffcd38') ||
-                                                (job?.status === 'SelectedFreelancer' && '#3d5afe') ||
-                                                (job?.status === 'PendingStart' && '#1de9b6') ||
-                                                '#ff1744' 
+                                            color: (job?.status ? '#00b074' : '#ff1744' )
                                         }}
                                         title='Status'
-                                        content={job?.status}
+                                        content={job?.status ? 'Open' : 'Closed' }
                                     />
                                     <JobInfoLine
                                         icon='bxs:dollar-circle'
                                         iconStyle={{ color: '#00b074' }}
                                         title='Budget'
-                                        content={`${job?.minPrice} - ${job?.maxPrice}$`}
+                                        content={`$${job?.price}`}
                                     />
                                     <JobInfoLine
                                         icon='ant-design:calendar-twotone'
@@ -177,26 +163,13 @@ const JobDetails = () => {
                                     <JobInfoLine
                                         icon='ant-design:calendar-twotone'
                                         iconStyle={{ color: '#b22a00' }}
-                                        title='End Date'
-                                        content={fDate(job?.endDate)}
+                                        title='Expire Date'
+                                        content={fDate(job?.expireDate)}
                                     />
-                                    {job?.status === 'Open' && (
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                justifyContent: 'flex-end'
-                                                
-                                            }}
-                                        >
-                                            <Button variant='contained' color='error'>
-                                                Delete
-                                            </Button>
-                                        </Box>
-                                    )}
                                 </Stack>
                             </PaperStyle>
                         </Grid>
-                        {offers?.length > 0 && (
+                        {applieds?.length > 0 && (
                             <Grid item xs={12} md={8}>
                                 <Box
                                     sx={{
@@ -205,13 +178,13 @@ const JobDetails = () => {
                                     }}
                                 >                              
                                     <Typography variant='body1' color='text.secondary' sx={{ fontWeight: 600, fontSize: '1.2rem', marginBlockStart: 2 }} >
-                                        {offers?.length} {offers?.length > 1 ? 'Offers' : 'Offer' }
+                                        {applieds?.length} {applieds?.length > 1 ? 'Applieds' : 'Applied' }
                                     </Typography>
                                     <Divider />
                                 </Box>
                                 <Stack spacing={2} sx={{ marginBlockStart: 2 }}>
-                                    {offers?.map((offer) => (
-                                        <Offer offer={offer} key={offer?.id} />
+                                    {applieds?.map((applied) => (
+                                        <Applied applied={applied} key={applied?.id} />
                                     ))}
                                 </Stack>
                             </Grid>

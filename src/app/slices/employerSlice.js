@@ -42,8 +42,8 @@ const employerslice = createSlice({
 
 export const {
     selectAll: selectAllEmployers,
-    selectById: selectEmpployerById,
-    selectIds: selectEmpployerIds
+    selectById: selectEmployerById,
+    selectIds: selectEmployerIds
 } = employersAdaper.getSelectors((state) => state.employers);
 
 const { reducer } = employerslice;

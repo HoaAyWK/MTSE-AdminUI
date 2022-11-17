@@ -7,7 +7,6 @@ import {
     Card,
     Table,
     Stack,
-    Checkbox,
     TableRow,
     TableBody,
     TableCell,
@@ -35,9 +34,10 @@ import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 
 const TABLE_HEAD = [
     { id: 'name', label: 'Name', alignRight: false },
-    { id: 'category', label: 'Category', alignRight: false},
-    { id: 'owner', label: 'Owner', alignRight: false },
+    { id: 'price', label: 'Price', alignRight: false },
     { id: 'status', label: 'Status', alignRight: false },
+    { id: 'startDate', label: 'Start Date', alignRight: false},
+    { id: 'expireDate', label: 'Expire Date', alignRight: false },
     { id: 'createdAt', label: 'Created At', alignRight: false },
     { id: '', label: '', alignRight: false }
 ];
@@ -179,7 +179,7 @@ const Job = () => {
                                 />
                                 <TableBody>
                                 {filteredJobs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                    const { id, name, owner, category, status, createdAt } = row;
+                                    const { id, name, price, status, startDate, expireDate, createdAt } = row;
                 
                                     return (
                                     <TableRow
@@ -187,53 +187,32 @@ const Job = () => {
                                         key={id}
                                         tabIndex={-1}
                                     >
-                                        <TableCell align="left" width={230}>
-                                            {name.length > 20 ? (
+                                        <TableCell align="left" width={400}>
+                                            {name.length > 50 ? (
                                                 <Tooltip title={name}>
                                                     <Typography variant='body2'>
-                                                        {`${name.slice(0, 20)}...`}
+                                                        {`${name.slice(0, 50)}...`}
                                                     </Typography>
                                                 </Tooltip>
                                                 ) : (name)      
                                             }
                                         </TableCell>
-                                        <TableCell align="left" width={230}>{category?.name}</TableCell>
-                                        <TableCell align="left" width={230}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                {owner?.avatar?.url ? (
-                                                    <Avatar src={owner.avatar.url} alt={owner.name} />
-                                                ) : (
-                                                    <LetterAvatar name={owner.name} sx={{ mr: 1 }} />
-                                                )}
-                                               <Typography
-                                                    component={RouterLink}
-                                                    to={`/dashboard/users/${id}`}
-                                                    color='text.secondary'
-                                                    sx={{ ml: 1, textDecoration: 'none', '&:hover': { textDecoration: 'underline' }}}
-                                                    variant='body1'
-                                                >
-                                                    {owner?.name}
-                                                </Typography>
-                                            </Box>
-                                        </TableCell>
+                                        <TableCell align="left" width={100}>{`$${price}`}</TableCell>
                                         <TableCell align="left">
                                             <Label
                                                 variant="ghost"
-                                                color={(status === 'Open' && 'success') ||
-                                                    (status === 'SelectedFreelancer' && 'warning') ||
-                                                    (status === 'PendingStart' && 'warning') ||
-                                                    (status === 'Processing' && 'info') ||
-                                                    (status === 'Closed' && 'secondary') || 'error'}
+                                                color={status ? 'success' : 'error'}
                                             >
-                                                {sentenceCase(status)}
+                                                {status ? 'Open' : 'Closed'}
                                             </Label>
                                         </TableCell>
+                                        <TableCell align="left">{fDate(startDate)}</TableCell>
+                                        <TableCell align="left">{fDate(expireDate)}</TableCell>
                                         <TableCell align="left">{fDate(createdAt)}</TableCell>
                                         <TableCell align="right">
                                             <MoreMenu>
                                                 <MoreMenuLinkItem to={`/dashboard/jobs/${id}`} iconName='eva:eye-outline' title='Details' />
-                                                <MoreMenuItem title="Delete" iconName="eva:trash-2-outline" id={id}/>
-                                            </ MoreMenu>
+                                            </MoreMenu>
                                         </TableCell>
                                     </TableRow>
                                     );
