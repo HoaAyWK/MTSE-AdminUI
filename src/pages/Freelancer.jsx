@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     Card,
@@ -26,7 +24,6 @@ import SearchNotFound from '../components/SearchNotFound';
 import { action_status } from '../app/constants';
 import { SimpleTableListHead, SimpleTableListToolbar, MoreMenu } from '../components/tables';
 import { clearMessage } from '../app/slices/messageSlice';
-import MoreMenuItem from '../components/tables/MoreMenuItem';
 import MoreMenuLinkItem from '../components/tables/MoreMenuLinkItem';
 import { selectAllFreelancers, getFreelancers } from '../app/slices/freelancerSlice';
 import LetterAvatar from '../components/LetterAvatar';
@@ -84,8 +81,6 @@ const Freelancer = () => {
     const freelancers = useSelector(selectAllFreelancers);
 
     const { status } = useSelector((state) => state.freelancers);
-
-    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (status === action_status.IDLE) {

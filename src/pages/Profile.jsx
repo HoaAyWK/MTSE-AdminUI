@@ -160,7 +160,7 @@ const Profile = () => {
                                 <Iconify icon='eva:pin-fill' width={25} height={25} sx={{ marginInlineEnd: 2 }} />
                                 <Typography variant='body1'>
                                     {'Live at '}
-                                    <InfoHighlightStyle variant='body1' component={'span'}>
+                                    <InfoHighlightStyle variant='body1' color='text.secondary' component={'span'}>
                                         {`${user?.address}`}
                                     </InfoHighlightStyle>
                                 </Typography>

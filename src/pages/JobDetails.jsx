@@ -22,7 +22,6 @@ import LetterAvatar from '../components/LetterAvatar';
 import Label from '../components/Label';
 import { fDate } from '../utils/formatTime';
 import JobInfoLine from '../features/jobs/JobInfoLine';
-import { getOffersByJob } from '../app/slices/offerSlice';
 import Applied from '../features/applieds/Applied';
 import { getAppliedsByJob } from '../app/slices/appliedSlice';
 
@@ -32,7 +31,6 @@ const PaperStyle = styled(Paper)(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
     zIndex: 0,
-    padding: theme.spacing(1),
     boxShadow: theme.shadows[2],
     padding: theme.spacing(2)
 }));
@@ -52,11 +50,7 @@ const JobDetails = () => {
 
     useEffect(() => {
         dispatch(getAppliedsByJob(jobId));
-    }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(getOffersByJob(jobId))
-    }, [jobId, dispatch]);
+    }, [dispatch, jobId]);
 
     return (
         <Page title={`Job ${job?.name}`}>

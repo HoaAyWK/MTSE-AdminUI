@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import Iconify from '../../components/Iconify';
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import NotificationsPopover from './NotificationsPopover';
 
 const DRAWER_WIDTH = 280;
 const APPBAR_MOBILE = 64;
@@ -43,7 +42,6 @@ const DashboardNavbar = ({ onOpenSidebar, user }) => {
                 <Box sx={{ flexGrow: 1 }} />
         
                 <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-                    <NotificationsPopover />
                     <AccountPopover user={user} />
                 </Stack>
             </ToolbarStyle>
