@@ -10,7 +10,7 @@ import Page from '../components/Page';
 import Logo from '../components/Logo';
 import { LoginForm } from '../features/auth/login';
 import { action_status, MESSAGE_ERRORS, ROLES } from '../app/constants';
-import { getCurrentUser, refresh } from '../app/slices/authSlice';
+import { getCurrentUser, refresh, logout } from '../app/slices/authSlice';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { setMessage } from '../app/slices/messageSlice';
 
@@ -70,10 +70,8 @@ const Login = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (token) {
-            dispatch(getCurrentUser());
-        }
-    }, [token, dispatch]);
+        dispatch(logout());
+    }, [dispatch]);
 
     useEffect(() => {
         if (loginStatus === action_status.SUCCEEDED) {
