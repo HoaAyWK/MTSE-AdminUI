@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RHFTextField, FormProvider } from '../../components/hook-form';
-import { changePassword, refresh } from '../../app/slices/authSlice';
+import { changePassword, logout } from '../../app/slices/authSlice';
 import { clearMessage } from '../../app/slices/messageSlice';
 import { action_status } from '../../app/constants';
 
@@ -55,7 +55,8 @@ const ChangePasswordFrom = (props) => {
     useEffect(() => {
         if (changedPassword) {
             enqueueSnackbar('Changed password successfully. Plaese login agian!', { variant: 'success' });
-            dispatch(refresh());
+            dispatch(logout());
+            dispatch(clearMessage());
             navigate('/login');
         }
     }, [changedPassword, enqueueSnackbar, dispatch, navigate])

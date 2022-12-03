@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Container, Box, Typography, Stack, Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 import Page from '../components/Page';
 import BreadcrumbRouter from '../components/BreadcrumbRouter';
-import useLocalStorage from '../hooks/useLocalStorage';
-import { getCurrentUser } from '../app/slices/authSlice';
 import { AccountForm, ChangePasswordForm } from '../features/account';
-
 
 const breadcrumbNameMap = {
     '': 'Dashboard',
@@ -30,14 +27,6 @@ const PageStyle = styled(Page)(({theme}) => ({
 const AccountSettings = () => {
     const [value, setValue] = useState('1');
     const { user } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (!user) {
-            dispatch(getCurrentUser());
-        }
-    }, [user, dispatch]);
-
 
     const handleChangeValue = (e, newValue) => {
         setValue(newValue);

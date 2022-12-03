@@ -6,7 +6,7 @@ import { Box, CircularProgress } from '@mui/material';
 
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
-import { getCurrentUser, refresh } from '../../app/slices/authSlice';
+import { getCurrentUser, logout } from '../../app/slices/authSlice';
 import { action_status, MESSAGE_ERRORS, ROLES } from '../../app/constants';
 import { useSnackbar } from 'notistack';
 import useLocalStorage from '../../hooks/useLocalStorage';
@@ -39,7 +39,7 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
     const [open, setOpen] = useState(false);
-    const { user: currentUser, getUserStatus } = useSelector((state) => state.auth);
+    const { user: currentUser, getUserStatus, loginStatus } = useSelector((state) => state.auth);
     const [token,] = useLocalStorage('token', null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -47,21 +47,23 @@ export default function DashboardLayout() {
 
     useEffect(() => {
         if (!token) {
-            dispatch(refresh());
+            dispatch(logout());
             navigate('/login');
         }
     }, [token, dispatch, navigate]);
 
     useEffect(() => {
-        if (!currentUser) {
-            dispatch(getCurrentUser());
-        } else {
-            if (currentUser.role !== ROLES.ADMIN) {
-                enqueueSnackbar(MESSAGE_ERRORS.UNAUTHORIZE, { variant: 'error' });
-                navigate('/login');
+        if (loginStatus === action_status.SUCCEEDED) {
+            if (!currentUser) {
+                dispatch(getCurrentUser());
+            } else {
+                if (currentUser.role !== ROLES.ADMIN) {
+                    enqueueSnackbar(MESSAGE_ERRORS.UNAUTHORIZE, { variant: 'error' });
+                    navigate('/login');
+                }
             }
         }
-    }, [currentUser, navigate, dispatch, enqueueSnackbar]);
+    }, [loginStatus, currentUser, navigate, dispatch, enqueueSnackbar]);
 
     return (
         getUserStatus === action_status.LOADING ? (

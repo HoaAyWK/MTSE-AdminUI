@@ -63,12 +63,6 @@ const Applied = ({ applied }) => {
                                 {fToNow(applied?.appliedAt)}
                             </Typography>
                         </Stack>
-                        <Label
-                            variant='ghost'
-                            color={applied?.status ? 'warning' : 'error' }
-                        >
-                            {applied?.status ? 'Pending' : 'Cancel'}
-                        </Label>
                     </Stack>
                 </Box>
             </Stack>

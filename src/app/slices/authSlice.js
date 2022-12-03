@@ -6,6 +6,7 @@ import api from '../api';
 import { BASE_API_URL, action_status, MESSAGE_VARIANT } from '../constants';
 import { setMessage } from './messageSlice';
 import { uploadTaskPromise } from '../../utils/uploadTaskPromise';
+import { stubTrue } from 'lodash';
 
 const initialState = {
     user: null,
@@ -15,7 +16,7 @@ const initialState = {
     updated: false,
     updateStatus: action_status.IDLE,
     changedPassword: false,
-    changedPasswordStatus: action_status.IDLE
+    changedPasswordStatus: action_status.IDLE,
 };
 
 export const login = createAsyncThunk(
@@ -122,6 +123,7 @@ const authSlice = createSlice({
             state.updated = false;
             state.user = null;
             localStorage.setItem('token', null);
+            localStorage.setItem('user', null);
         }
     },
     extraReducers: (builder) => {

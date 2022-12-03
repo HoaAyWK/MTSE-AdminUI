@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Card, Link, Container, Typography  } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,9 +9,9 @@ import Page from '../components/Page';
 import Logo from '../components/Logo';
 import { LoginForm } from '../features/auth/login';
 import { action_status, MESSAGE_ERRORS, ROLES } from '../app/constants';
-import { getCurrentUser, refresh, logout } from '../app/slices/authSlice';
+import { getCurrentUser, logout } from '../app/slices/authSlice';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { setMessage } from '../app/slices/messageSlice';
+import { clearMessage, setMessage } from '../app/slices/messageSlice';
 
 const RootStyle = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -62,8 +61,6 @@ const Login = () => {
     const { loginStatus, getUserStatus, user } = useSelector((state) => state.auth);
 
     const [token,] = useLocalStorage('token', null);
-    
-    const smUp = useResponsive('up', 'sm');
 
     const mdUp = useResponsive('up', 'md');
 
@@ -71,19 +68,20 @@ const Login = () => {
 
     useEffect(() => {
         dispatch(logout());
+        dispatch(clearMessage());
     }, [dispatch]);
 
     useEffect(() => {
         if (loginStatus === action_status.SUCCEEDED) {
             dispatch(getCurrentUser());
         }
-    }, [loginStatus, dispatch]);
+    }, [dispatch, loginStatus]);
 
     useEffect(() => {
         if (user) {
             if (user.role !== ROLES.ADMIN) {
                 dispatch(setMessage({ message: MESSAGE_ERRORS.UNAUTHORIZE, variant: 'error' }));
-                dispatch(refresh());
+                dispatch(logout());
             } else {
                 navigate('/dashboard/app');
             }
@@ -95,15 +93,6 @@ const Login = () => {
             <RootStyle>
                 <HeaderStyle>
                 <Logo />
-
-                {smUp && (
-                    <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-                        Don’t have an account? {''}
-                    <Link variant="subtitle2" component={RouterLink} to="/register">
-                        Get started
-                    </Link>
-                    </Typography>
-                )}
                 </HeaderStyle>
 
                 {mdUp && (
@@ -118,21 +107,12 @@ const Login = () => {
                 <Container maxWidth="sm">
                     <ContentStyle>
                         <Typography variant="h4" gutterBottom>
-                            Sign in to HTX Freelancer
+                            Sign in to 5Job Dashboard
                         </Typography>
 
                         <Typography sx={{ color: 'text.secondary', mb: 2 }}>Enter your details below.</Typography>
 
                         <LoginForm />
-
-                        {!smUp && (
-                        <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                            Don’t have an account?{' '}
-                            <Link variant="subtitle2" component={RouterLink} to="/register">
-                            Get started
-                            </Link>
-                        </Typography>
-                        )}
                     </ContentStyle>
                 </Container>
             </RootStyle>
